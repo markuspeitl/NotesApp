@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:p1="http://schemas.android.com/apk/res/android"
+    p1:minWidth="25px"
+    p1:minHeight="25px"
+    p1:layout_width="match_parent"
+    p1:layout_height="match_parent"
+    p1:id="@+id/frameLayout1">
+    <MultiAutoCompleteTextView
+        p1:layout_width="match_parent"
+        p1:layout_height="match_parent"
+        p1:id="@+id/note_editor_edittext"
+        p1:layout_marginTop="50dp" />
+    <LinearLayout
+        p1:orientation="horizontal"
+        p1:minWidth="25px"
+        p1:minHeight="25px"
+        p1:layout_width="match_parent"
+        p1:layout_height="wrap_content"
+        p1:id="@+id/styleLayout">
+        <Button
+            p1:text="B"
+            p1:id="@+id/boldStyleButton"
+            p1:layout_width="50dp"
+            p1:layout_height="50dp" />
+        <Button
+            p1:text="I"
+            p1:id="@+id/italicStyleButton"
+            p1:layout_width="50dp"
+            p1:layout_height="50dp" />
+        <Button
+            p1:text="U"
+            p1:id="@+id/underlinedStyleButton"
+            p1:layout_width="50dp"
+            p1:layout_height="50dp" />
+        <Button
+            p1:text="R"
+            p1:id="@+id/redStyleButton"
+            p1:layout_width="50dp"
+            p1:layout_height="50dp" />
+        <Button
+            p1:text="18"
+            p1:id="@+id/size18StyleButton"
+            p1:layout_width="50dp"
+            p1:layout_height="50dp" />
+        <Button
+            p1:text="24"
+            p1:id="@+id/size24StyleButton"
+            p1:layout_width="50dp"
+            p1:layout_height="50dp" />
+    </LinearLayout>
+</FrameLayout>

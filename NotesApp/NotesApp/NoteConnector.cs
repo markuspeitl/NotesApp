@@ -8,7 +8,7 @@ namespace NotesApp
 {
     public class NoteConnector
     {
-        private Note insideNote;
+        public Note insideNote;
 
         public NoteConnector(Note note)
         {
@@ -19,24 +19,33 @@ namespace NotesApp
         {
             this.insideNote.contents = contents;
         }
+        public void SetNoteContentStyle(CSSStyleManager contentStyle)
+        {
+            this.insideNote.contentStyle = contentStyle;
+        }
 
 
         public SimpleHtmlNode GetBodyContent()
         {
-            return GetBodyNode(insideNote.contents);
+            return GetNodeOfTag(insideNote.contents, "body");
         }
-        private SimpleHtmlNode GetBodyNode(SimpleHtmlNode rootNode)
+        public SimpleHtmlNode GetHeadContent()
+        {
+            return GetNodeOfTag(insideNote.contents, "head");
+        }
+
+        private SimpleHtmlNode GetNodeOfTag(SimpleHtmlNode rootNode,string tag)
         {
             foreach (SimpleHtmlNode node in rootNode.ChildNodes)
             {
-                if (node.tag.Equals("body"))
+                if (node.tag.Equals(tag))
                 {
                     return node;
                 }
             }
             foreach (SimpleHtmlNode node in rootNode.ChildNodes)
             {
-                SimpleHtmlNode bodyNode = GetBodyNode(node);
+                SimpleHtmlNode bodyNode = GetNodeOfTag(node, tag);
                 if (bodyNode != null)
                 {
                     return bodyNode;

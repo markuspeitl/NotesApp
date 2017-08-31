@@ -11,12 +11,14 @@ namespace NotesApp
         //public static string noteRootPath = "/data/data/NotesApp.Droid/files/Notes";
         public static string noteRootPath = "/sdcard/Notes/";
         public static string noteContentFormat = ".html";
+        public static string noteStyleFormat = ".css";
 
         public string title;
         public string date;
         public string wordcount;
         public string path;
         public SimpleHtmlNode contents;
+        public CSSStyleManager contentStyle;
 
         public Note() { }
 

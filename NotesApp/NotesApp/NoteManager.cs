@@ -46,6 +46,13 @@ namespace NotesApp
                         SimpleHtmlNode content = parser.ParseXML(fileStream);
                         newConnector.SetNoteContent(content);
 
+                        if (datamanager.CheckFileExists(dirPath + "/" + shortName + Note.noteStyleFormat))
+                        {
+                            fileStream = datamanager.GetStreamFromPath(dirPath + "/" + shortName + Note.noteStyleFormat);
+                            CSSStyleManager contentStyle = parser.ParseCSS(fileStream);
+                            newConnector.SetNoteContentStyle(contentStyle);
+                        }
+
                         noteConnectors.Add(newConnector);
                         noteTitles.Add(shortName);
                     }

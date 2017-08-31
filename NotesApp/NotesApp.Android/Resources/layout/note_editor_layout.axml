@@ -9,7 +9,16 @@
         p1:layout_width="match_parent"
         p1:layout_height="match_parent"
         p1:id="@+id/note_editor_edittext"
-        p1:layout_marginTop="50dp" />
+        p1:layout_marginTop="50dp"
+        p1:text="test text"
+        p1:textSize="20dp"
+        p1:textStyle="normal"
+        p1:textColor="#000000"
+        p1:background="#ffffff"
+        p1:gravity="top"
+        p1:paddingTop="50dp"
+        p1:paddingLeft="15dp"
+        p1:paddingRight="15dp" />
     <LinearLayout
         p1:orientation="horizontal"
         p1:minWidth="25px"
@@ -48,4 +57,30 @@
             p1:layout_width="50dp"
             p1:layout_height="50dp" />
     </LinearLayout>
+    <LinearLayout
+        p1:orientation="vertical"
+        p1:minWidth="25px"
+        p1:minHeight="25px"
+        p1:layout_width="match_parent"
+        p1:layout_height="2dp"
+        p1:id="@+id/linearLayout1"
+        p1:layout_marginTop="90dp"
+        p1:layout_marginLeft="10dp"
+        p1:layout_marginRight="10dp"
+        p1:background="#000000" />
+    <AutoCompleteTextView
+        p1:layout_width="match_parent"
+        p1:layout_height="30dp"
+        p1:id="@+id/autoCompleteTextView1"
+        p1:layout_marginTop="55dp"
+        p1:layout_marginRight="50dp"
+        p1:layout_marginLeft="50dp"
+        p1:textAlignment="center"
+        p1:gravity="center"
+        p1:textColor="@android:color/black"
+        p1:background="@android:color/transparent"
+        p1:textSize="24dp"
+        p1:textStyle="bold"
+        p1:hint="Title"
+        p1:textColorHint="@android:color/darker_gray"/>
 </FrameLayout>

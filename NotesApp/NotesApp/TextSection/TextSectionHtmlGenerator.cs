@@ -19,14 +19,14 @@ namespace NotesApp.TextSection
 
             rootNode = new SimpleHtmlNode("html", null);
 
-            currentNode = new SimpleHtmlNode("head", rootNode);
-            rootNode.ChildNodes.Add(currentNode);
+            currentNode = new SimpleHtmlNode("head", null);
+            rootNode.AddChild(currentNode);
 
-            currentNode = new SimpleHtmlNode("body", rootNode);
-            rootNode.ChildNodes.Add(currentNode);
+            currentNode = new SimpleHtmlNode("body", null);
+            rootNode.AddChild(currentNode);
 
-            currentNode = new SimpleHtmlNode("p", rootNode);
-            rootNode.ChildNodes.Add(currentNode);
+            currentNode = new SimpleHtmlNode("p", null);
+            rootNode.AddChild(currentNode);
         }
 
         public SimpleHtmlNode GenerateHtmlFromTextSections(Dictionary<Type, List<TextSectionObject>> existingTextSection)

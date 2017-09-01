@@ -17,7 +17,7 @@ namespace NotesApp
         private CustomHtmlParser parser;
         private Stream fileStream;
 
-        private SimpleNodeAccessor accessor;
+        //private SimpleNodeAccessor accessor;
 
         public NoteManager(ISaveAndLoad datamanager)
         {
@@ -40,22 +40,22 @@ namespace NotesApp
                 if(datamanager.CheckFileExists(dirPath + "/" + shortName + Note.noteContentFormat))
                 {
                     NoteConnector newConnector = new NoteConnector(new Note(shortName, ""));
-                    fileStream = datamanager.GetStreamFromPath(dirPath + "/" + shortName + Note.noteContentFormat);
-                    if (fileStream != null)
+                    
+                    //Always parse styl before html if you want css stylings
+                    if (datamanager.CheckFileExists(dirPath + "/" + shortName + Note.noteStyleFormat))
                     {
-                        SimpleHtmlNode content = parser.ParseXML(fileStream);
-                        newConnector.SetNoteContent(content);
-
-                        if (datamanager.CheckFileExists(dirPath + "/" + shortName + Note.noteStyleFormat))
-                        {
-                            fileStream = datamanager.GetStreamFromPath(dirPath + "/" + shortName + Note.noteStyleFormat);
-                            CSSStyleManager contentStyle = parser.ParseCSS(fileStream);
-                            newConnector.SetNoteContentStyle(contentStyle);
-                        }
-
-                        noteConnectors.Add(newConnector);
-                        noteTitles.Add(shortName);
+                        fileStream = datamanager.GetStreamFromPath(dirPath + "/" + shortName + Note.noteStyleFormat);
+                        CSSStyleManager contentStyle = parser.ParseCSS(fileStream);
+                        newConnector.SetNoteContentStyle(contentStyle);
                     }
+
+                    fileStream = datamanager.GetStreamFromPath(dirPath + "/" + shortName + Note.noteContentFormat);
+                    SimpleHtmlNode content = parser.ParseXML(fileStream, newConnector.insideNote.contentStyle);
+                    newConnector.SetNoteContent(content);
+
+                    noteConnectors.Add(newConnector);
+                    noteTitles.Add(shortName);
+                    
                 }
             }
         }

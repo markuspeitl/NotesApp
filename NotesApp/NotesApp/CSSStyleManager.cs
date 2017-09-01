@@ -20,6 +20,11 @@ namespace NotesApp
             stylesPool.Add(style.toStyleTag,style);
         }
 
+        public bool HasStyle(string checkTag)
+        {
+            return stylesPool.ContainsKey(checkTag);
+        }
+
         public CSSStyling GetStyle(string cssTag)
         {
             if (stylesPool.ContainsKey(cssTag))

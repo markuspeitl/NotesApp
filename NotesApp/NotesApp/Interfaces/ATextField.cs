@@ -10,8 +10,8 @@ namespace NotesApp.Interfaces
     {
         public event EventHandler<int> CursorPositionChanged;
 
-        public event EventHandler<TextInsertedEventArgs> TextInsertedEvent;
-        public event EventHandler<TextRemovedEventArgs> TextRemovedEvent;
+        public event EventHandler<TextChangeEventArgs> TextInsertedEvent;
+        public event EventHandler<TextChangeEventArgs> TextRemovedEvent;
         public event EventHandler<StyleChangedEventArgs> StyleChangedEvent;
 
         public abstract void SetText(string text);
@@ -23,18 +23,37 @@ namespace NotesApp.Interfaces
 
         public abstract void SetDefaultColors(string foregroundColor, string backgroundColor);
 
+        public abstract void ClearStyles(int start, int end);
+        public abstract void ClearText();
+        public abstract string GetPlainText();
+
+        protected bool wasSetup = false;
+        public void IsSetUp(bool state)
+        {
+            this.wasSetup = state;
+        }
+
+        public void InvokeTextInsertedEvent(TextChangeEventArgs e)
+        {
+            TextInsertedEvent.Invoke(this, e);
+        }
+        public void InvokeTextRemovedEvent(TextChangeEventArgs e)
+        {
+            TextRemovedEvent.Invoke(this, e);
+        }
+
         /*public virtual void SetStyleToSelection(TextStyle textStyle)
         {
             int[] selection = GetSelectionStartEnd();
             SetStyleToSection(textStyle, selection[0], selection[1]);
         }*/
 
-        public class TextInsertedEventArgs
+        /*public class TextInsertedEventArgs
         {
             public int position;
             public string text;
-        }
-        public class TextRemovedEventArgs
+        }*/
+        public class TextChangeEventArgs
         {
             public int startPosition;
             public int endPosition;

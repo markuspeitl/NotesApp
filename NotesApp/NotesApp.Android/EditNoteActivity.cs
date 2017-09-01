@@ -71,6 +71,7 @@ namespace NotesApp.Droid
         private void OnSize24ButtonClicked(object sender, EventArgs e)
         {
             noteDisplay.ExecuteStyleChange(new TextStyle() { size = 29 });
+            noteDisplay.SaveCurrentNote(dataManager);
         }
 
         private void OnSize18ButtonClicked(object sender, EventArgs e)

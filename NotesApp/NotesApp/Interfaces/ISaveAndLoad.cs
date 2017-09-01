@@ -12,5 +12,6 @@ namespace NotesApp
         List<String> GetSubDirectoryPaths(string rootPath);
         bool CheckFileExists(string rootPath);
         string GetShortDirName(string dirPath);
+        void SaveText(string text, string directoryPath, string fileName);
     }
 }

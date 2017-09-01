@@ -14,6 +14,7 @@ using Android.Text;
 using Android.Text.Style;
 using Android.Graphics;
 using Android.Content.Res;
+using NotesApp.Droid.CustomSpans;
 
 namespace NotesApp.Droid
 {
@@ -21,12 +22,38 @@ namespace NotesApp.Droid
     {
         private EditText noteEditText;
         private Context sourceContext;
-        SpannableString spanRange;
+        SpannableStringBuilder spanRange;
 
         public EditTextManager(EditText noteEditText, Context sourceContext)
         {
             this.noteEditText = noteEditText;
             this.sourceContext = sourceContext;
+
+            noteEditText.TextChanged += TextChanged;
+            noteEditText.BeforeTextChanged += BeforeTextChanged;
+        }
+
+        private void BeforeTextChanged(object sender, TextChangedEventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void TextChanged(object sender, TextChangedEventArgs e)
+        {
+            //throw new NotImplementedException();
+            if (this.wasSetup)
+            {
+                if (e.AfterCount < e.BeforeCount)
+                {
+                    TextChangeEventArgs removeArgs = new TextChangeEventArgs() { startPosition = e.Start, endPosition = e.Start - e.BeforeCount };
+                    this.InvokeTextRemovedEvent(removeArgs);
+                }
+                else if (e.AfterCount > e.BeforeCount)
+                {
+                    TextChangeEventArgs insertArgs = new TextChangeEventArgs() { startPosition = e.Start, endPosition = e.Start + e.AfterCount };
+                    this.InvokeTextInsertedEvent(insertArgs);
+                }
+            }
         }
 
         private void RemoveOverlappingSpans(Type ty, TextSectionObject section)
@@ -40,7 +67,7 @@ namespace NotesApp.Droid
         {
             if (this.spanRange == null)
             {
-                this.spanRange = new SpannableString(noteEditText.Text);
+                this.spanRange = new SpannableStringBuilder(noteEditText.Text);
             }
 
             if (insertSections.ContainsKey(typeof(SizeTextSection)))
@@ -99,15 +126,11 @@ namespace NotesApp.Droid
                 {
                     if (((FontFamilyTextSection)section).fontfamily != "")
                     {
-                        Color color = Color.ParseColor(((FontFamilyTextSection)section).fontfamily);
-                        if (color != null)
-                        {
-                            RemoveOverlappingSpans(typeof(TypefaceSpan), section);
-                            spanRange.SetSpan(new TypefaceSpan(((FontFamilyTextSection)section).fontfamily),
-                                section.GetSectionStart(),
-                                section.GetSectionEnd(),
-                                SpanTypes.ExclusiveExclusive);
-                        }
+                        RemoveOverlappingSpans(typeof(TypefaceSpan), section);
+                        spanRange.SetSpan(new TypefaceSpan(((FontFamilyTextSection)section).fontfamily),
+                            section.GetSectionStart(),
+                            section.GetSectionEnd(),
+                            SpanTypes.ExclusiveExclusive);
                     }
                 }
             }
@@ -163,7 +186,29 @@ namespace NotesApp.Droid
                     }
                 }
             }
-            
+            if (insertSections.ContainsKey(typeof(MarginTextSection)))
+            {
+                foreach (MarginTextSection section in insertSections[typeof(MarginTextSection)])
+                {
+                    /*section.sectionStart = section.sectionEnd;
+                    RemoveOverlappingSpans(typeof(MarginSpan), section);
+                    spanRange.SetSpan(new MarginSpan(20),
+                            section.GetSectionStart(),
+                            section.GetSectionEnd(),
+                            SpanTypes.ExclusiveExclusive);*/
+
+                }
+            }
+            if (insertSections.ContainsKey(typeof(BreakLineTextSection)))
+            {
+                //Always go from back to front
+                insertSections[typeof(BreakLineTextSection)].Reverse();
+                foreach (BreakLineTextSection section in insertSections[typeof(BreakLineTextSection)])
+                {
+                    spanRange.Insert(section.sectionEnd, "\n");
+                }
+            }
+
             noteEditText.TextFormatted = spanRange;
         }
 
@@ -176,6 +221,7 @@ namespace NotesApp.Droid
         public override void SetText(string text)
         {
             this.noteEditText.Text = text;
+            this.spanRange = new SpannableStringBuilder(noteEditText.Text);
         }
 
         public override int[] GetSelectionStartEnd()
@@ -187,6 +233,24 @@ namespace NotesApp.Droid
         {
             this.noteEditText.SetBackgroundColor(Color.ParseColor(backgroundColor));
             this.noteEditText.SetTextColor(Color.ParseColor(foregroundColor));
+        }
+
+        public override void ClearStyles(int start, int end)
+        {
+            Java.Lang.Object[] overlappingSpans = (Java.Lang.Object[])spanRange.GetSpans(start,
+                end, Java.Lang.Class.FromType(typeof(Java.Lang.Object)));
+            RemoveAll(overlappingSpans);
+        }
+
+        public override void ClearText()
+        {
+            spanRange = null;
+            noteEditText.Text = "";
+        }
+
+        public override string GetPlainText()
+        {
+            return noteEditText.Text;
         }
     }
 }

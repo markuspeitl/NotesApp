@@ -82,5 +82,16 @@ namespace NotesApp.Droid
             fileText = Regex.Replace(fileText, @"(\r\n|\n|\t)", String.Empty);
             File.WriteAllText(path,fileText);
         }
+
+        public void SaveText(string text, string directoryPath, string fileName)
+        {
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            File.WriteAllText(directoryPath + fileName, text);
+
+        }
     }
 }

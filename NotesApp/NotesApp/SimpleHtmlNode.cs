@@ -11,9 +11,11 @@ namespace NotesApp
 
         public bool IsText = false;
 
-        public List<SimpleHtmlNode> ChildNodes;
-        public SimpleHtmlNode Parent;
+        private List<SimpleHtmlNode> ChildNodes;
+        private SimpleHtmlNode parent;
+        public SimpleHtmlNode Parent { get { return parent; }}
         public string tag;
+        private string inheritanceTag = "";
         public bool wasClosed = false;
 
         private String content;
@@ -21,11 +23,131 @@ namespace NotesApp
 
         public List<SimpleHtmlAttribute> attributes;
 
-        public SimpleHtmlNode(string tag, SimpleHtmlNode parent)
+        private TextStyle nodeStyle;
+        private CSSStyleManager cssStyler;
+
+        public int textSectionStart = 0;
+        public int textSectionEnd = 0;
+
+        public SimpleHtmlNode(string tag, CSSStyleManager cssStyler)
         {
             this.tag = tag;
-            ChildNodes = new List<SimpleHtmlNode>();
-            attributes = new List<SimpleHtmlAttribute>();
+            this.ChildNodes = new List<SimpleHtmlNode>();
+            this.attributes = new List<SimpleHtmlAttribute>();
+            this.cssStyler = cssStyler;
+            this.nodeStyle = TextStyleProvider.GetTagStyle(tag);
+        }
+
+        private void SetParent(SimpleHtmlNode parent)
+        {
+            inheritanceTag = parent.inheritanceTag + " " +this.tag;
+            this.parent = parent;
+            UpdateNodeStyling();
+        }
+
+
+        private void UpdateNodeStyling()
+        {
+            //Reset NodeStyle before inheriting new Style from parent
+            nodeStyle = TextStyleProvider.GetTagStyle(tag);
+
+            //If nodeStyle is null it is not supported and wont be set
+            if (nodeStyle != null)
+            {
+                //Inherit Parent Styling when setting new Parent
+                if (this.parent != null)
+                {
+                    if (this.parent.nodeStyle != null)
+                        nodeStyle.Inherit(this.parent.nodeStyle);
+                }
+
+                if (cssStyler != null)
+                {
+                    CSSStyling ccsStyle = null;
+                    if (cssStyler.HasStyle(inheritanceTag))
+                    {
+                        ccsStyle = cssStyler.GetStyle(inheritanceTag);
+                    }
+                    else if (cssStyler.HasStyle(tag))
+                    {
+                        ccsStyle = cssStyler.GetStyle(tag);
+                    }
+
+                    if (ccsStyle != null)
+                    {
+                        //OverWrite Relevant Attributes
+                        nodeStyle.ApplyCSSStyling(ccsStyle);
+                    }
+                }
+            }
+        }
+        public List<SimpleHtmlNode> GetChildNodes()
+        {
+            return ChildNodes;
+        }
+
+        public void UpdateNodeStylingBranch()
+        {
+            this.UpdateNodeStyling();
+            foreach (SimpleHtmlNode simpleNode in ChildNodes)
+            {
+                simpleNode.UpdateNodeStylingBranch();
+            }
+        }
+        
+        private int GetStart()
+        {
+            return this.textSectionStart;
+        }
+        private int GetEnd()
+        {
+            if (!IsText)
+            {
+                return this.textSectionEnd;
+            }
+            else
+            {
+                return content.Length;
+            }
+        }
+
+        //Tranverses Tree Brach recursively in reverse and update span ends
+        private void UpdateNodeEnds(int addToEnd)
+        {
+            this.textSectionEnd = this.textSectionEnd + addToEnd;
+            if(this.parent != null)
+            {
+                this.parent.UpdateNodeEnds(addToEnd);
+            }
+        }
+
+        public void AddChild(SimpleHtmlNode child)
+        {
+            this.ChildNodes.Add(child);
+            child.SetParent(this);
+
+            //Update Parent endings to what was added (shift to right by insertion lenght)
+            UpdateNodeEnds(child.GetEnd());
+
+            child.textSectionStart = this.GetStart() + (this.GetEnd() - this.GetStart());
+            child.textSectionEnd = child.textSectionStart + child.GetEnd();
+        }
+
+        public List<TextStyleSection> GetStylingSections()
+        {
+            List<TextStyleSection> sections = new List<TextStyleSection>();
+            if (!IsText)
+            {
+                //Do not add section if node styling not supported for this node
+                if(nodeStyle != null)
+                    sections.Add(new TextStyleSection(nodeStyle, textSectionStart, textSectionEnd));
+
+                foreach (SimpleHtmlNode simpleNode in ChildNodes)
+                {
+                    sections.AddRange(simpleNode.GetStylingSections());
+                }
+            }
+            return sections;
         }
 
         public string GetOuterString()
@@ -107,6 +229,19 @@ namespace NotesApp
             }
 
             return text;
+        }
+
+        public class TextStyleSection
+        {
+            public TextStyle nodeStyle;
+            public int sectionStart;
+            public int sectionEnd;
+            public TextStyleSection(TextStyle nodeStyle, int sectionStart,int sectionEnd)
+            {
+                this.nodeStyle = nodeStyle;
+                this.sectionStart = sectionStart;
+                this.sectionEnd = sectionEnd;
+            }
         }
 
     }

@@ -50,6 +50,18 @@ namespace NotesApp
             }
             displayTextField.SetDefaultColors(forgroundColor, backgoundColor);
 
+            displayTextField.TextInsertedEvent += TextWasInserted;
+            displayTextField.TextRemovedEvent += TextWasRemoved;
+        }
+
+        private void TextWasRemoved(object sender, ATextField.TextChangeEventArgs e)
+        {
+            sectionManager.RemoveCharactersUpdateMetrics(e.startPosition, e.endPosition - e.startPosition);
+        }
+
+        private void TextWasInserted(object sender, ATextField.TextChangeEventArgs e)
+        {
+            sectionManager.InsertCharactersUpdateMetrics(e.startPosition, e.endPosition - e.startPosition);
         }
 
         private SimpleNodeInterpreter nodeInterperter;
@@ -60,11 +72,30 @@ namespace NotesApp
             bodyNode = noteToDisplay.GetBodyContent();
             headNode = noteToDisplay.GetHeadContent();
 
-            displayTextField.SetText(nodeInterperter.GetExtendedText());
+            SimpleNodeInterpreter.RichText richText = nodeInterperter.GetRichText();
+            displayTextField.SetText(richText.baseText);
+            InsertAllSections(richText.sections);
+            SendSectionsToEditText();
+
+            //displayTextField.SetText(nodeInterperter.GetExtendedText());
+
+
+            //sectionManager.GenerateHtml();
+
             //displayTextField.SetText(bodyNode.GetInnerText());
             //displayTextField.SetText(noteToDisplay.insideNote.contents);
 
             SetupDisplayerColors();
+
+            displayTextField.IsSetUp(true);
+        }
+
+        public void SaveCurrentNote(ISaveAndLoad dataManager)
+        {
+            this.noteToDisplay.insideNote.plainText = displayTextField.GetPlainText();
+            this.noteToDisplay.insideNote.styleSections = sectionManager.GetElementsList();
+            string noteRepresentation = this.noteToDisplay.insideNote.ToXML().ToString();
+            dataManager.SaveText(noteRepresentation,"/sdcard/Notes/", "thisTextNote.xml");
         }
 
         public void ExecuteStyleChange(TextStyle newSectionStyle)
@@ -130,18 +161,26 @@ namespace NotesApp
             {
                 o.sectionStart = start;
                 o.sectionEnd = end;
+            }
+            InsertAllSections(insertSections);
+        }
 
+        private void InsertAllSections(List<TextSectionObject> insertSections)
+        {
+            foreach (TextSectionObject o in insertSections)
+            {
                 if (o.GetType().Equals(typeof(FontFamilyTextSection)) || o.GetType().Equals(typeof(SizeTextSection)))
                 {
-                    InsertSectionOfType(o, start, end, o.GetType(), true);
+                    InsertSectionOfType(o, o.sectionStart, o.sectionEnd, o.GetType(), true);
                 }
                 else
                 {
-                    InsertSectionOfType(o, start, end, o.GetType(), false);
+                    InsertSectionOfType(o, o.sectionStart, o.sectionEnd, o.GetType(), false);
                 }
             }
         }
-        
+
+
         private void SendSectionsToEditText()
         {
             displayTextField.InsertTextSections(transferSections);
@@ -166,6 +205,7 @@ namespace NotesApp
                 overlappingSections = new List<TextSectionObject>();
             }
             
+            //Three cases for overlapping spanSections
             if (overlappingSections.Count == 0)
             {
                 sectionManager.InsertTextSection(section);

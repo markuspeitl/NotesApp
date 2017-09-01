@@ -61,9 +61,12 @@
     <Compile Include="Depreciated\TextSection.cs" />
     <Compile Include="SimpleNodeInterpreter.cs" />
     <Compile Include="SimpleTextSectionNode.cs" />
+    <Compile Include="TextExtendedStyle.cs" />
     <Compile Include="TextSection\BColorTextSection.cs" />
+    <Compile Include="TextSection\BreakLineTextSection.cs" />
     <Compile Include="TextSection\FColorTextSection.cs" />
     <Compile Include="TextSection\FontFamilyTextSection.cs" />
+    <Compile Include="TextSection\MarginTextSection.cs" />
     <Compile Include="TextSection\StrikeOutTextSection.cs" />
     <Compile Include="TextSection\StyleTextSection.cs" />
     <Compile Include="TextSection\SizeTextSection.cs" />
@@ -72,13 +75,8 @@
     <Compile Include="TextSection\TextSectionObject.cs" />
     <Compile Include="TextSection\UnderLineTextSection.cs" />
     <Compile Include="TextStyle.cs" />
+    <Compile Include="TextStyleProvider.cs" />
     <Compile Include="XMLText.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="HtmlAgilityPack, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\HtmlAgilityPack.1.5.1\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid+MonoTouch\HtmlAgilityPack.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

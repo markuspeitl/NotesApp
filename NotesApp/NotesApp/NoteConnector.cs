@@ -36,14 +36,14 @@ namespace NotesApp
 
         private SimpleHtmlNode GetNodeOfTag(SimpleHtmlNode rootNode,string tag)
         {
-            foreach (SimpleHtmlNode node in rootNode.ChildNodes)
+            foreach (SimpleHtmlNode node in rootNode.GetChildNodes())
             {
                 if (node.tag.Equals(tag))
                 {
                     return node;
                 }
             }
-            foreach (SimpleHtmlNode node in rootNode.ChildNodes)
+            foreach (SimpleHtmlNode node in rootNode.GetChildNodes())
             {
                 SimpleHtmlNode bodyNode = GetNodeOfTag(node, tag);
                 if (bodyNode != null)

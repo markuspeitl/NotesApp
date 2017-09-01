@@ -7,11 +7,11 @@ using System.Xml.Linq;
 
 namespace NotesApp
 {
-    public class UnderLineTextSection : TextSectionObject
+    public class BreakLineTextSection : TextSectionObject
     {
         public override TextSectionObject Clone()
         {
-            UnderLineTextSection section = new UnderLineTextSection();
+            BreakLineTextSection section = new BreakLineTextSection();
             section.sectionEnd = this.sectionEnd;
             section.sectionStart = this.sectionStart;
             return section;
@@ -19,7 +19,7 @@ namespace NotesApp
 
         public override void FromXML(XElement toUnpack)
         {
-            XElement element = toUnpack.Element("UnderLineTextSection");
+            XElement element = toUnpack.Element("BreakLineTextSection");
             if (element != null)
             {
                 Int32.TryParse(element.Element("Start").Value, out this.sectionStart);
@@ -29,7 +29,7 @@ namespace NotesApp
 
         public override XElement ToXML()
         {
-            XElement element = new XElement("UnderLineTextSection",
+            XElement element = new XElement("BreakLineTextSection",
                 new XElement("Start", sectionStart),
                 new XElement("End", sectionStart)
                 );

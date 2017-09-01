@@ -13,7 +13,7 @@ namespace NotesApp
         {
         }
 
-        public SimpleHtmlNode ParseXML(Stream fileReader)
+        public SimpleHtmlNode ParseXML(Stream fileReader, CSSStyleManager styleManager)
         {
 
             SimpleHtmlNode rootNode;
@@ -75,10 +75,10 @@ namespace NotesApp
 
                         if(text != "")
                         {
-                            SimpleHtmlNode newNode = new SimpleHtmlNode("text", currentNode);
-                            currentNode.ChildNodes.Add(newNode);
-                            newNode.Parent = currentNode;
+                            SimpleHtmlNode newNode = new SimpleHtmlNode("text", styleManager);
+                            //Set content to node BEFORE adding as child, to calculate spans correctly
                             newNode.Content = text;
+                            currentNode.AddChild(newNode);
                             text = "";
                         }
 
@@ -97,9 +97,8 @@ namespace NotesApp
                         {
                             if (!closeTag)
                             {
-                                SimpleHtmlNode newNode = new SimpleHtmlNode(tagName, currentNode);
-                                currentNode.ChildNodes.Add(newNode);
-                                newNode.Parent = currentNode;
+                                SimpleHtmlNode newNode = new SimpleHtmlNode(tagName, styleManager);
+                                currentNode.AddChild(newNode);
                                 if (delayedAttributes.Count > 0)
                                 {
                                     newNode.attributes.AddRange(delayedAttributes);
@@ -215,6 +214,7 @@ namespace NotesApp
 
                         currentStyle = new CSSStyling(tagName, styleAttributes,isClass,isID);
                         styleManager.PutStyle(currentStyle);
+                        tagName = "";
 
                         styleAttributes = new Dictionary<string, string>();
                         isClass = false;

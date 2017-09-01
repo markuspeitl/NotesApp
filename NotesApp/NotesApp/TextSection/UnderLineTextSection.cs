@@ -8,5 +8,12 @@ namespace NotesApp
 {
     public class UnderLineTextSection : TextSectionObject
     {
+        public override TextSectionObject Clone()
+        {
+            UnderLineTextSection section = new UnderLineTextSection();
+            section.sectionEnd = this.sectionEnd;
+            section.sectionStart = this.sectionStart;
+            return section;
+        }
     }
 }

@@ -8,5 +8,12 @@ namespace NotesApp
 {
     public class StrikeOutTextSection : TextSectionObject
     {
+        public override TextSectionObject Clone()
+        {
+            StrikeOutTextSection section = new StrikeOutTextSection();
+            section.sectionEnd = this.sectionEnd;
+            section.sectionStart = this.sectionStart;
+            return section;
+        }
     }
 }

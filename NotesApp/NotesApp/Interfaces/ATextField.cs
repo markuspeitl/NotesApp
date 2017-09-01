@@ -15,11 +15,11 @@ namespace NotesApp.Interfaces
         public event EventHandler<StyleChangedEventArgs> StyleChangedEvent;
 
         public abstract void SetText(string text);
-        public abstract void SetText(SimpleHtmlNode html);
+        //public abstract void SetText(SimpleHtmlNode html);
         //public abstract void SetStyleToSection(TextStyle textStyle, int textStart, int textEnd);
         public abstract int[] GetSelectionStartEnd();
 
-        public abstract void InsertTextSections(List<TextSectionObject> sections);
+        public abstract void InsertTextSections(Dictionary<Type, List<TextSectionObject>> sections);
 
         public abstract void SetDefaultColors(string foregroundColor, string backgroundColor);
 

@@ -59,6 +59,7 @@
     <Compile Include="Depreciated\TextExtendedNode.cs" />
     <Compile Include="Depreciated\TextHandler.cs" />
     <Compile Include="Depreciated\TextSection.cs" />
+    <Compile Include="SimpleNodeInterpreter.cs" />
     <Compile Include="SimpleTextSectionNode.cs" />
     <Compile Include="TextSection\BColorTextSection.cs" />
     <Compile Include="TextSection\FColorTextSection.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="TextSection\StrikeOutTextSection.cs" />
     <Compile Include="TextSection\StyleTextSection.cs" />
     <Compile Include="TextSection\SizeTextSection.cs" />
+    <Compile Include="TextSection\TextSectionHtmlGenerator.cs" />
     <Compile Include="TextSection\TextSectionManager.cs" />
     <Compile Include="TextSection\TextSectionObject.cs" />
     <Compile Include="TextSection\UnderLineTextSection.cs" />

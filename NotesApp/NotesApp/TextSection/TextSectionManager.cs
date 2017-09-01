@@ -61,12 +61,16 @@ namespace NotesApp
 
         private bool Overlap(int start,int end, TextSectionObject second)
         {
-            if(start > second.GetSectionEnd() && second.GetSectionStart() > start)
+            if(start > second.GetSectionEnd() || second.GetSectionStart() > end)
             {
                 return false;
             }
             return true;
         }
 
+        public override TextSectionObject Clone()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -14,6 +14,12 @@ namespace NotesApp
         {
             this.fontfamily = fontfamily;
         }
-
+        public override TextSectionObject Clone()
+        {
+            FontFamilyTextSection section = new FontFamilyTextSection(fontfamily);
+            section.sectionEnd = this.sectionEnd;
+            section.sectionStart = this.sectionStart;
+            return section;
+        }
     }
 }

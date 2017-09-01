@@ -14,5 +14,13 @@ namespace NotesApp
         {
             this.color = color;
         }
+
+        public override TextSectionObject Clone()
+        {
+            FColorTextSection section = new FColorTextSection(color);
+            section.sectionEnd = this.sectionEnd;
+            section.sectionStart = this.sectionStart;
+            return section;
+        }
     }
 }

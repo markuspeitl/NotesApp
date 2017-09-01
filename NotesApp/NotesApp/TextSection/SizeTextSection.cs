@@ -14,5 +14,12 @@ namespace NotesApp
         {
             this.Size = Size;
         }
+        public override TextSectionObject Clone()
+        {
+            SizeTextSection section = new SizeTextSection(Size);
+            section.sectionEnd = this.sectionEnd;
+            section.sectionStart = this.sectionStart;
+            return section;
+        }
     }
 }

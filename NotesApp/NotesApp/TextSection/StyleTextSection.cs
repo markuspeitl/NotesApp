@@ -16,5 +16,13 @@ namespace NotesApp
             this.isItalic = isItalic;
             this.isBold = isBold;
         }
+
+        public override TextSectionObject Clone()
+        {
+            StyleTextSection section = new StyleTextSection(isBold, isItalic);
+            section.sectionEnd = this.sectionEnd;
+            section.sectionStart = this.sectionStart;
+            return section;
+        }
     }
 }

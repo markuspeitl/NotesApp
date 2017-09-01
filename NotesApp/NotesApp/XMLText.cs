@@ -11,13 +11,13 @@ namespace NotesApp
 {
     public class XMLText
     {
-        private TextSection textRepresentation;
+        //private TextSection textRepresentation;
 
         // private List<Styles> styles
 
         public void SaveToXML()
         {
-            XElement rootText = XElement.Parse(textRepresentation.GetFormattedText());
+            //XElement rootText = XElement.Parse(textRepresentation.GetFormattedText());
         }
 
         public void LoadFromXML(ISaveAndLoad dataManager)
@@ -136,7 +136,7 @@ namespace NotesApp
             return null;
         }
 
-        private void RestoreTextSectionTree(XElement currentElement, TextSection currentSection)
+        /*private void RestoreTextSectionTree(XElement currentElement, TextSection currentSection)
         {
             IEnumerable<XAttribute> attributes;
 
@@ -152,7 +152,7 @@ namespace NotesApp
 
                 RestoreTextSectionTree(child, textchild);
             }
-        }
+        }*/
 
     }
 }

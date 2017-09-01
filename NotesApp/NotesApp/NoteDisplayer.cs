@@ -16,14 +16,14 @@ namespace NotesApp
 
         private TextSectionManager sectionManager;
 
-        private List<TextSectionObject> transferSections;
+        private Dictionary<Type,List<TextSectionObject>> transferSections;
 
         public NoteDisplayer(NoteConnector noteToDisplay, ATextField displayTextField)
         {
             this.noteToDisplay = noteToDisplay;
             this.displayTextField = displayTextField;
 
-            transferSections = new List<TextSectionObject>();
+            transferSections = new Dictionary<Type, List<TextSectionObject>>();
             sectionManager = new TextSectionManager(displayTextField);
             
             DisplayNote(this.noteToDisplay);
@@ -52,11 +52,16 @@ namespace NotesApp
 
         }
 
+        private SimpleNodeInterpreter nodeInterperter;
         public void DisplayNote(NoteConnector noteToDisplay)
         {
+            nodeInterperter = new SimpleNodeInterpreter(noteToDisplay.insideNote.contents);
+
             bodyNode = noteToDisplay.GetBodyContent();
             headNode = noteToDisplay.GetHeadContent();
-            displayTextField.SetText(bodyNode.GetInnerText());
+
+            displayTextField.SetText(nodeInterperter.GetExtendedText());
+            //displayTextField.SetText(bodyNode.GetInnerText());
             //displayTextField.SetText(noteToDisplay.insideNote.contents);
 
             SetupDisplayerColors();
@@ -140,17 +145,31 @@ namespace NotesApp
         private void SendSectionsToEditText()
         {
             displayTextField.InsertTextSections(transferSections);
-            transferSections = new List<TextSectionObject>();
+            transferSections = new Dictionary<Type, List<TextSectionObject>>();
+        }
+        private void PutItemIntoDictionary(TextSectionObject section)
+        {
+            if (!transferSections.ContainsKey(section.GetType()))
+            {
+                transferSections[section.GetType()] = new List<TextSectionObject>();
+            }
+
+            transferSections[section.GetType()].Add(section);
         }
 
         private void InsertSectionOfType(TextSectionObject section, int start, int end, Type spanType, bool overwrite)
         {
             List<TextSectionObject> overlappingSections = sectionManager.GetOverLappingSections(start,end,section.GetType());
 
+            if (overlappingSections == null)
+            {
+                overlappingSections = new List<TextSectionObject>();
+            }
+            
             if (overlappingSections.Count == 0)
             {
                 sectionManager.InsertTextSection(section);
-                transferSections.Add(section);
+                PutItemIntoDictionary(section);
             }
             else if (overlappingSections.Count == 1 && IsInside(start, end, overlappingSections.ElementAt(0)))
             {
@@ -165,7 +184,7 @@ namespace NotesApp
                     otherSection.sectionStart = oldStart;
                     otherSection.sectionEnd = start;
                     sectionManager.InsertTextSection(otherSection);
-                    transferSections.Add(otherSection);
+                    PutItemIntoDictionary(otherSection);
                 }
                 if (end != oldEnd)
                 {
@@ -173,12 +192,12 @@ namespace NotesApp
                     otherClone.sectionStart = end;
                     otherClone.sectionEnd = oldEnd;
                     sectionManager.InsertTextSection(otherClone);
-                    transferSections.Add(otherClone);
+                    PutItemIntoDictionary(otherClone);
                 }
                 if (overwrite)
                 {
                     sectionManager.InsertTextSection(section);
-                    transferSections.Add(section);
+                    PutItemIntoDictionary(section);
                 }
             }
             else
@@ -188,7 +207,7 @@ namespace NotesApp
                 section.sectionStart = minmax[0];
                 section.sectionEnd = minmax[1];
                 sectionManager.InsertTextSection(section);
-                transferSections.Add(section);
+                PutItemIntoDictionary(section);
             }
         }
 

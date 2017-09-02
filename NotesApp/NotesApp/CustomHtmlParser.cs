@@ -44,120 +44,129 @@ namespace NotesApp
             while ((readCharInt = lineReader.Read()) != -1){
                 readChar = (char)readCharInt;
 
-                if (readTag && readChar != '>')
+                //Ignore Line breaks and tabs
+                if (readChar != '\r' && readChar != '\n' && readChar != '\t')
                 {
-                    if (readAttributes)
-                    {
-                        attribute += readChar;
-                    }
 
-                    if (readChar == ' ')
+                    if (readTag && readChar != '>')
                     {
-                        if (attribute != "")
+                        if (readAttributes)
                         {
-                            delayedAttributes.Add(new SimpleHtmlAttribute(attribute));
-                            attribute = "";
-                        }
-                        readAttributes = true;
-                    }
-
-                    if (!readAttributes)
-                    {
-                        tagName += readChar;
-                    }
-                     
-                }
-
-                switch (readChar)
-                {
-                    case '<':
-                        readTag = true;
-
-                        if(text != "")
-                        {
-                            SimpleHtmlNode newNode = new SimpleHtmlNode("text", styleManager);
-                            //Set content to node BEFORE adding as child, to calculate spans correctly
-                            newNode.Content = text;
-                            currentNode.AddChild(newNode);
-                            text = "";
+                            attribute += readChar;
                         }
 
-                        break;
-                    case '>':
-                        readTag = false;
-                        readComment = false;
-                        readAttributes = false;
-
-                        if (attribute != "")
+                        if (readChar == ' ')
                         {
-                            delayedAttributes.Add(new SimpleHtmlAttribute(attribute));
-                            attribute = "";
-                        }
-                        if (tagName != "")
-                        {
-                            if (!closeTag)
+                            if (attribute != "")
                             {
-                                SimpleHtmlNode newNode = new SimpleHtmlNode(tagName, styleManager);
-                                currentNode.AddChild(newNode);
-                                if (delayedAttributes.Count > 0)
-                                {
-                                    newNode.attributes.AddRange(delayedAttributes);
-                                    delayedAttributes = new List<SimpleHtmlAttribute>();
-                                }
-                                currentNode = newNode;
-
-                                /*if (readHead)
-                                {
-                                    currentNode.wasClosed = true;
-                                    currentNode = currentNode.Parent;
-                                    closeTag = false;
-                                }*/
+                                delayedAttributes.Add(new SimpleHtmlAttribute(attribute));
+                                attribute = "";
                             }
-                            else
+                            readAttributes = true;
+                        }
+
+                        if (!readAttributes)
+                        {
+                            tagName += readChar;
+                        }
+
+                    }
+
+                    switch (readChar)
+                    {
+                        case '<':
+                            readTag = true;
+
+                            if (text != "")
                             {
+                                SimpleHtmlNode newNode = new SimpleHtmlNode("text", styleManager);
+                                //Set content to node BEFORE adding as child, to calculate spans correctly
+                                newNode.Content = text;
+                                currentNode.AddChild(newNode);
+                                text = "";
+                            }
+
+                            break;
+                        case '>':
+                            readTag = false;
+                            readComment = false;
+                            readAttributes = false;
+
+                            if (attribute != "")
+                            {
+                                delayedAttributes.Add(new SimpleHtmlAttribute(attribute));
+                                attribute = "";
+                            }
+                            if (tagName != "")
+                            {
+                                if (!closeTag)
+                                {
+                                    SimpleHtmlNode newNode = new SimpleHtmlNode(tagName, styleManager);
+                                    currentNode.AddChild(newNode);
+                                    if (delayedAttributes.Count > 0)
+                                    {
+                                        newNode.attributes.AddRange(delayedAttributes);
+                                        delayedAttributes = new List<SimpleHtmlAttribute>();
+                                    }
+                                    currentNode = newNode;
+
+                                    /*if (readHead)
+                                    {
+                                        currentNode.wasClosed = true;
+                                        currentNode = currentNode.Parent;
+                                        closeTag = false;
+                                    }*/
+                                }
+                                else
+                                {
+                                    /*if (tagName.Equals("head"))
+                                    {
+                                        readHead = false;
+                                    }*/
+
+                                    if (tagName.Equals(currentNode.tag))
+                                    {
+                                        currentNode.wasClosed = true;
+                                        currentNode = currentNode.Parent;
+                                        closeTag = false;
+                                    }
+                                }
+
                                 /*if (tagName.Equals("head"))
                                 {
                                     readHead = false;
                                 }*/
 
-                                if (tagName.Equals(currentNode.tag))
-                                {
-                                    currentNode.wasClosed = true;
-                                    currentNode = currentNode.Parent;
-                                    closeTag = false;
-                                }
+                                tagName = "";
                             }
 
-                            /*if (tagName.Equals("head"))
+                            break;
+                        case '/':
+                            if (lastChar == '<')
                             {
-                                readHead = false;
-                            }*/
+                                closeTag = true;
+                                tagName = "";
+                            }
+                            break;
+                        case '!':
+                            readTag = false;
+                            readComment = true;
+                            tagName = "";
+                            break;
+                        default:
+                            if (!readTag && !closeTag && !readComment)
+                            {
+                                text += readChar;
+                            }
+                            break;
+                    }
 
-                            tagName = "";
-                        }
-                        
-                        break;
-                    case '/':
-                        if (lastChar == '<')
-                        {
-                            closeTag = true;
-                            tagName = "";
-                        }
-                        break;
-                    case '!':
-                        readTag = false;
-                        readComment = true;
-                        tagName = "";
-                        break;
-                    default:
-                        if (!readTag && !closeTag&& !readComment) {
-                            text += readChar;
-                        }
-                        break;
+                    lastChar = readChar;
+
                 }
-
-                lastChar = readChar;
             }
+
+
 
             lineReader.Dispose();
             fileReader.Dispose();
@@ -195,72 +204,78 @@ namespace NotesApp
             while ((readCharInt = lineReader.Read()) != -1)
             {
                 readChar = (char)readCharInt;
-                
-                switch (readChar)
+
+                //Ignore Line breaks and tabs
+                if (readChar != '\r' && readChar != '\n' && readChar != '\t')
                 {
-                    case '{':
-                        readTag = false;
-                        readpropertyname = true;
-                        //Clean up tag name
-                        while (tagName[tagName.Length-1] == ' ')
-                        {
-                            tagName = tagName.Substring(0, tagName.Length - 1);
-                        }
 
-                        break;
-                    case '}':
-                        readpropertyvalue = false;
-                        readpropertyname = false;
-
-                        currentStyle = new CSSStyling(tagName, styleAttributes,isClass,isID);
-                        styleManager.PutStyle(currentStyle);
-                        tagName = "";
-
-                        styleAttributes = new Dictionary<string, string>();
-                        isClass = false;
-                        isID = false;
-
-                        break;
-                    case ':':
-                        readpropertyvalue = true;
-                        readpropertyname = false;
-                        break;
-                    case ';':
-                        styleAttributes.Add(propertyname, propertyvalue);
-                        propertyname = "";
-                        propertyvalue = "";
-                        readpropertyvalue = false;
-                        readpropertyname = true;
-                        break;
-                    default:
-                        if (readChar != ' ')
-                        {
-                            if (readpropertyname)
+                    switch (readChar)
+                    {
+                        case '{':
+                            readTag = false;
+                            readpropertyname = true;
+                            //Clean up tag name
+                            while (tagName[tagName.Length - 1] == ' ')
                             {
-                                propertyname += readChar;
+                                tagName = tagName.Substring(0, tagName.Length - 1);
                             }
-                            else if (readpropertyvalue)
-                            {
-                                propertyvalue += readChar;
-                            }
-                            else if (!readTag)
-                            {
-                                readTag = true;
-                            }
-                        }
-                        if (readTag)
-                        {
-                            if (!readpropertyname && !readpropertyvalue)
-                            {
-                                tagName += readChar;
-                                if (readChar == '.')
-                                    isClass = true;
-                                if (readChar == '#')
-                                    isID = true;
-                            }
-                        }
 
-                        break;
+                            break;
+                        case '}':
+                            readpropertyvalue = false;
+                            readpropertyname = false;
+
+                            currentStyle = new CSSStyling(tagName, styleAttributes, isClass, isID);
+                            styleManager.PutStyle(currentStyle);
+                            tagName = "";
+
+                            styleAttributes = new Dictionary<string, string>();
+                            isClass = false;
+                            isID = false;
+
+                            break;
+                        case ':':
+                            readpropertyvalue = true;
+                            readpropertyname = false;
+                            break;
+                        case ';':
+                            styleAttributes.Add(propertyname, propertyvalue);
+                            propertyname = "";
+                            propertyvalue = "";
+                            readpropertyvalue = false;
+                            readpropertyname = true;
+                            break;
+                        default:
+                            if (readChar != ' ')
+                            {
+                                if (readpropertyname)
+                                {
+                                    propertyname += readChar;
+                                }
+                                else if (readpropertyvalue)
+                                {
+                                    propertyvalue += readChar;
+                                }
+                                else if (!readTag)
+                                {
+                                    readTag = true;
+                                }
+                            }
+                            if (readTag)
+                            {
+                                if (!readpropertyname && !readpropertyvalue)
+                                {
+                                    tagName += readChar;
+                                    if (readChar == '.')
+                                        isClass = true;
+                                    if (readChar == '#')
+                                        isID = true;
+                                }
+                            }
+
+                            break;
+                    }
+
                 }
             }
 

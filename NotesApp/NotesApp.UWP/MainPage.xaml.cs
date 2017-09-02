@@ -22,9 +22,27 @@ namespace NotesApp.UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
+
+        NoteManager noteManager;
+
         public MainPage()
         {
             this.InitializeComponent();
+
+            noteManager = new NoteManager(new SaveAndLoad());
+            noteManager.LoadNotes("Notes");
+            //noteManager.LoadNotes("C:\\Notes\\");
+
+            SetupNoteDisplay();
+        }
+
+        public async void SetupNoteDisplay()
+        {
+            NoteConnector note = await noteManager.GetNoteFromPosition(0);
+
+            RichTextManager display = new RichTextManager(noteEditText);
+
+            NoteDisplayer noteDisplay = new NoteDisplayer(note, display);
         }
     }
 }

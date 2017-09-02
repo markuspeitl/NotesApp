@@ -8,7 +8,7 @@ namespace NotesApp
 {
     public interface ISaveAndLoad
     {
-        System.IO.Stream GetStreamFromPath(string path);
+        Task<System.IO.Stream> GetStreamFromPath(string path);
         List<String> GetSubDirectoryPaths(string rootPath);
         bool CheckFileExists(string rootPath);
         string GetShortDirName(string dirPath);

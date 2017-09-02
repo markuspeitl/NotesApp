@@ -17,6 +17,8 @@ namespace NotesApp
         private CustomHtmlParser parser;
         private Stream fileStream;
 
+        private string selectedDirPath = "";
+
         //private SimpleNodeAccessor accessor;
 
         public NoteManager(ISaveAndLoad datamanager)
@@ -32,6 +34,8 @@ namespace NotesApp
 
         public void LoadNotes(string rootPath)
         {
+            selectedDirPath = rootPath;
+
             List<string> subDirPaths = datamanager.GetSubDirectoryPaths(rootPath);
 
             foreach(string dirPath in subDirPaths)
@@ -40,28 +44,41 @@ namespace NotesApp
                 if(datamanager.CheckFileExists(dirPath + "/" + shortName + Note.noteContentFormat))
                 {
                     NoteConnector newConnector = new NoteConnector(new Note(shortName, ""));
-                    
-                    //Always parse styl before html if you want css stylings
-                    if (datamanager.CheckFileExists(dirPath + "/" + shortName + Note.noteStyleFormat))
-                    {
-                        fileStream = datamanager.GetStreamFromPath(dirPath + "/" + shortName + Note.noteStyleFormat);
-                        CSSStyleManager contentStyle = parser.ParseCSS(fileStream);
-                        newConnector.SetNoteContentStyle(contentStyle);
-                    }
-
-                    fileStream = datamanager.GetStreamFromPath(dirPath + "/" + shortName + Note.noteContentFormat);
-                    SimpleHtmlNode content = parser.ParseXML(fileStream, newConnector.insideNote.contentStyle);
-                    newConnector.SetNoteContent(content);
-
                     noteConnectors.Add(newConnector);
                     noteTitles.Add(shortName);
-                    
                 }
             }
         }
 
-        public NoteConnector GetNoteFromPosition(int position)
+        private async Task<bool> InitializeNote(int position)
         {
+            NoteConnector newConnector = noteConnectors.ElementAt(position);
+
+            //Always parse styl before html if you want css stylings
+            if (datamanager.CheckFileExists(selectedDirPath + "/" + newConnector.insideNote.title + "/" + newConnector.insideNote.title + Note.noteStyleFormat))
+            {
+                fileStream = await datamanager.GetStreamFromPath(selectedDirPath + "/" + newConnector.insideNote.title + "/" + newConnector.insideNote.title + Note.noteStyleFormat);
+                CSSStyleManager contentStyle = parser.ParseCSS(fileStream);
+                newConnector.SetNoteContentStyle(contentStyle);
+            }
+            if (datamanager.CheckFileExists(selectedDirPath + "/" + newConnector.insideNote.title + "/" + newConnector.insideNote.title + Note.noteContentFormat))
+            {
+                fileStream = await datamanager.GetStreamFromPath(selectedDirPath + "/" + newConnector.insideNote.title + "/" + newConnector.insideNote.title + Note.noteContentFormat);
+                if (fileStream != null)
+                {
+                    SimpleHtmlNode content = parser.ParseXML(fileStream, newConnector.insideNote.contentStyle);
+                    newConnector.SetNoteContent(content);
+                    return true;
+                }
+                
+            }
+
+            return false;
+        }
+
+        public async Task<NoteConnector> GetNoteFromPosition(int position)
+        {
+            await InitializeNote(position);
             return noteConnectors.ElementAt(position);
         }
 

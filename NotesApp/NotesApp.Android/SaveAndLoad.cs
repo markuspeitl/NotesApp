@@ -43,7 +43,7 @@ namespace NotesApp.Droid
             return null;
         }
 
-        public async Task<Stream> GetStreamFromPath(string path)
+        public async Task<Stream> GetReadStreamFromPath(string path)
         {
             if (File.Exists(path))
             {
@@ -52,6 +52,12 @@ namespace NotesApp.Droid
                 return fileStream;
             }
             return null;
+        }
+
+        public async Task<Stream> GetWriteStreamFromPath(string path)
+        {
+            FileStream fileStream = new FileStream(path, FileMode.Create);
+            return fileStream;
         }
 
         public List<string> GetSubDirectoryPaths(string rootPath)
@@ -86,13 +92,51 @@ namespace NotesApp.Droid
 
         public void SaveText(string text, string directoryPath, string fileName)
         {
+            System.Diagnostics.Debug.WriteLine("Save Text:" + directoryPath +"/" + fileName + "\n" + text);
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
             }
 
             File.WriteAllText(directoryPath + fileName, text);
+            System.Diagnostics.Debug.WriteLine("Save Text end");
+        }
 
+        public /*async Task<string>*/string LoadText(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                return File.ReadAllText(filePath);
+            }
+            return "";
+        }
+
+        public  /*async Task<string>*/string LoadText(string directoryPath, string fileName)
+        {
+            return LoadText(directoryPath + fileName);
+        }
+
+        public List<string> GetSubFilePaths(string directoryPath)
+        {
+            List<String> filePaths = new List<string>();
+            try
+            {
+                if (Directory.Exists(directoryPath))
+                {
+                    DirectoryInfo info = new DirectoryInfo(directoryPath);
+                    FileInfo[] files = info.GetFiles().ToArray();
+                    foreach (FileInfo singleFile in files)
+                    {
+                        filePaths.Add(singleFile.FullName);
+                    }
+                    return filePaths;
+                }
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("There has been an error acquiring subdir Paths:" + e.Message);
+            }
+            return filePaths;
         }
     }
 }

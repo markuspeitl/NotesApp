@@ -71,7 +71,7 @@
     <AutoCompleteTextView
         p1:layout_width="match_parent"
         p1:layout_height="30dp"
-        p1:id="@+id/autoCompleteTextView1"
+        p1:id="@+id/note_title_edittext"
         p1:layout_marginTop="55dp"
         p1:layout_marginRight="50dp"
         p1:layout_marginLeft="50dp"
@@ -82,5 +82,5 @@
         p1:textSize="24dp"
         p1:textStyle="bold"
         p1:hint="Title"
-        p1:textColorHint="@android:color/darker_gray"/>
+        p1:textColorHint="@android:color/darker_gray" />
 </FrameLayout>

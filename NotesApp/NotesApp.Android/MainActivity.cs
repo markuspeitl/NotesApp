@@ -31,6 +31,7 @@ namespace NotesApp.Droid
 
             Intent intent = new Intent(this, typeof(NoteListActivity));
             this.StartActivity(intent);
+            this.Finish();
         }
 	}
 }

@@ -9,7 +9,7 @@ using Windows.Storage;
 
 namespace NotesApp.UWP
 {
-    public class SaveAndLoad : ISaveAndLoad
+    public class SaveAndLoad
     {
         public bool CheckFileExists(string rootPath)
         {
@@ -109,6 +109,41 @@ namespace NotesApp.UWP
 
             File.WriteAllText(directoryPath + fileName, text);
 
+        }
+
+        public async Task<string> LoadText(string filePath)
+        {
+            StorageFile readFile = await StorageFile.GetFileFromPathAsync(filePath);
+            string fileText = await FileIO.ReadTextAsync(readFile);
+            return fileText;
+        }
+
+        public async Task<string> LoadText(string directoryPath, string fileName)
+        {
+            return await LoadText(directoryPath + fileName);
+        }
+
+        public List<string> GetSubFilePaths(string directoryPath)
+        {
+            List<String> filePaths = new List<string>();
+            try
+            {
+                if (Directory.Exists(directoryPath))
+                {
+                    DirectoryInfo info = new DirectoryInfo(directoryPath);
+                    FileInfo[] files = info.GetFiles().ToArray();
+                    foreach (FileInfo singleFile in files)
+                    {
+                        filePaths.Add(singleFile.FullName);
+                    }
+                    return filePaths;
+                }
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("There has been an error acquiring subdir Paths:" + e.Message);
+            }
+            return filePaths;
         }
     }
 }

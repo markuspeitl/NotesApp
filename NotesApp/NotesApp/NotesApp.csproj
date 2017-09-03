@@ -33,14 +33,21 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BackTrackReader.cs" />
-    <Compile Include="Bucket.cs" />
-    <Compile Include="CSSStyle.cs" />
-    <Compile Include="CSSStyleManager.cs" />
-    <Compile Include="CSSStyling.cs" />
+    <Compile Include="HtmlParser\BackTrackReader.cs" />
+    <Compile Include="Interfaces\ATitleField.cs" />
+    <Compile Include="Models\Bucket.cs" />
+    <Compile Include="HtmlParser\CSSStyle.cs" />
+    <Compile Include="HtmlParser\CSSStyleManager.cs" />
+    <Compile Include="HtmlParser\CSSStyling.cs" />
     <Compile Include="Depreciated\CustomHtmlNode.cs" />
-    <Compile Include="CustomHtmlParser.cs" />
+    <Compile Include="HtmlParser\CustomHtmlParser.cs" />
     <Compile Include="Depreciated\HtmlNodeAccessor.cs" />
+    <Compile Include="Models\BucketMeta.cs" />
+    <Compile Include="Models\NoteHTMLContent.cs" />
+    <Compile Include="Models\NoteMeta.cs" />
+    <Compile Include="Models\NoteProxy.cs" />
+    <Compile Include="Models\NoteXMLContent.cs" />
+    <Compile Include="SingleTons\GlobalSettings.cs" />
     <Compile Include="HexColorProvider.cs" />
     <Compile Include="Interfaces\ATextField.cs" />
     <Compile Include="Interfaces\IEditText.cs" />
@@ -50,22 +57,21 @@
     <Compile Include="Interfaces\ITextFieldConnector.cs" />
     <Compile Include="Interfaces\ITextFormatter.cs" />
     <Compile Include="Interfaces\ITextSectionObject.cs" />
-    <Compile Include="MyClass.cs" />
-    <Compile Include="Note.cs" />
-    <Compile Include="NoteConnector.cs" />
+    <Compile Include="Models\NoteContent.cs" />
     <Compile Include="NoteDisplayer.cs" />
     <Compile Include="NoteManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimpleHtmlAttribute.cs" />
-    <Compile Include="SimpleHtmlNode.cs" />
-    <Compile Include="SimpleNodeAccessor.cs" />
+    <Compile Include="HtmlParser\SimpleHtmlAttribute.cs" />
+    <Compile Include="HtmlParser\SimpleHtmlNode.cs" />
+    <Compile Include="HtmlParser\SimpleNodeAccessor.cs" />
     <Compile Include="Depreciated\StyleAction.cs" />
     <Compile Include="Depreciated\TextExtendedNode.cs" />
     <Compile Include="Depreciated\TextHandler.cs" />
     <Compile Include="Depreciated\TextSection.cs" />
-    <Compile Include="SimpleNodeInterpreter.cs" />
-    <Compile Include="SimpleTextSectionNode.cs" />
-    <Compile Include="TextExtendedStyle.cs" />
+    <Compile Include="HtmlParser\SimpleNodeInterpreter.cs" />
+    <Compile Include="HtmlParser\SimpleTextSectionNode.cs" />
+    <Compile Include="Models\TextExtendedStyle.cs" />
+    <Compile Include="SingleTons\TextStyleTextSectionConverter.cs" />
     <Compile Include="TextSection\BColorTextSection.cs" />
     <Compile Include="TextSection\BreakLineTextSection.cs" />
     <Compile Include="TextSection\FColorTextSection.cs" />
@@ -78,9 +84,9 @@
     <Compile Include="TextSection\TextSectionManager.cs" />
     <Compile Include="TextSection\TextSectionObject.cs" />
     <Compile Include="TextSection\UnderLineTextSection.cs" />
-    <Compile Include="TextStyle.cs" />
-    <Compile Include="TextStyleCSSProvider.cs" />
-    <Compile Include="TextStyleHTMLProvider.cs" />
+    <Compile Include="Models\TextStyle.cs" />
+    <Compile Include="SingleTons\TextStyleCSSProvider.cs" />
+    <Compile Include="SingleTons\TextStyleHTMLProvider.cs" />
     <Compile Include="XMLText.cs" />
   </ItemGroup>
   <ItemGroup>

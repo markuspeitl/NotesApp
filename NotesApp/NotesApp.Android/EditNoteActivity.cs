@@ -15,17 +15,20 @@ using Android.Graphics;
 
 namespace NotesApp.Droid
 {
-    [Activity(Label = "EditNoteActivity")]
+    [Activity(Label = "EditNoteActivity",NoHistory =true)]
     public class EditNoteActivity : Activity
     {
 
-        private NoteManager manager;
+        private NoteManager noteManager;
         private SaveAndLoad dataManager;
 
         private NoteDisplayer noteDisplay;
         private EditTextManager editManager;
+        private EditTitleManager titleManager;
 
         private EditText noteEditText;
+        private EditText titleEditText;
+
         private Button boldButton;
         private Button italicButton;
         private Button underlineButton;
@@ -41,6 +44,7 @@ namespace NotesApp.Droid
 
 
             noteEditText = this.FindViewById<EditText>(Resource.Id.note_editor_edittext);
+            titleEditText = this.FindViewById<EditText>(Resource.Id.note_title_edittext);
 
             boldButton = this.FindViewById<Button>(Resource.Id.boldStyleButton);
             italicButton = this.FindViewById<Button>(Resource.Id.italicStyleButton);
@@ -58,24 +62,62 @@ namespace NotesApp.Droid
 
             // Create your application here
             dataManager = new SaveAndLoad();
-            manager = new NoteManager(dataManager);
+            noteManager = new NoteManager(dataManager);
 
             SetupNote();
         }
 
-        private async void SetupNote()
+        private void SetupNote()
         {
-            int selectedNotePos = this.Intent.GetIntExtra("SelectedNotePosition", 0);
-            NoteConnector selectedNote = await manager.GetNoteFromPosition(selectedNotePos);
-
             editManager = new EditTextManager(noteEditText, this);
-            noteDisplay = new NoteDisplayer(selectedNote, editManager);
+            titleManager = new EditTitleManager(titleEditText);
+            noteDisplay = new NoteDisplayer(editManager, titleManager);
+
+            //int selectedNotePos = this.Intent.GetIntExtra("SelectedNotePosition", 0);
+            //NoteConnector selectedNote = await manager.GetNoteFromPosition(selectedNotePos);
+
+            /*bool newNote = this.Intent.GetBooleanExtra("NewNote",false);
+            if (newNote)
+            {
+                selectedNote = new NoteConnector("Title", "");
+            }*/
+            NoteProxy proxy;
+            string noteProxyPath = this.Intent.GetStringExtra("NoteProxyMetaPath");
+            if (noteProxyPath != null)
+            {
+                proxy = new NoteProxy(noteProxyPath,dataManager);
+            }
+            else
+            {
+                NoteMeta meta = new NoteMeta();
+                meta.createdDate = DateTime.Now.ToShortDateString();
+                meta.lastModifiedDate = DateTime.Now.ToShortDateString();
+                meta.backgroundColor = "green";
+                meta.frontColor = "red";
+                meta.title = "";
+                meta.wordcount = 0;
+                proxy = new NoteProxy(GlobalSettings.GetProxysPath(),meta,dataManager);
+            }
+            
+            noteDisplay.DisplayNote(proxy);
         }
 
         private void OnSize24ButtonClicked(object sender, EventArgs e)
         {
             noteDisplay.ExecuteStyleChange(new TextStyle() { fontsize = new TextStyle.SizeAble() { size = 29 } });
-            noteDisplay.SaveCurrentNote(dataManager);
+        }
+
+        /*public async override void OnBackPressed()
+        {
+            //NoteProxy saveNote = await noteDisplay.GetFormattedNote();
+            //saveNote.SaveProxyMetaAndContent();
+            base.OnBackPressed();
+        }*/
+        protected async override void OnStop()
+        {
+            base.OnStop();
+            NoteProxy saveNote = await noteDisplay.GetFormattedNote();
+            saveNote.SaveProxyMetaAndContent();
         }
 
         private void OnSize18ButtonClicked(object sender, EventArgs e)

@@ -1,4 +1,5 @@
 ﻿using NotesApp.Interfaces;
+using NotesApp.SingleTons;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,53 +11,81 @@ namespace NotesApp
     public class NoteDisplayer
     {
         private ATextField displayTextField;
-        private NoteConnector noteToDisplay;
-        private SimpleHtmlNode bodyNode;
-        private SimpleHtmlNode headNode;
+        private ATitleField displayTitleField;
+        private NoteProxy noteToDisplay;
 
         private TextSectionManager sectionManager;
 
         private Dictionary<Type,List<TextSectionObject>> transferSections;
 
-        public NoteDisplayer(NoteConnector noteToDisplay, ATextField displayTextField)
+        public NoteDisplayer(ATextField displayTextField, ATitleField displayTitleField)
         {
-            this.noteToDisplay = noteToDisplay;
             this.displayTextField = displayTextField;
+            this.displayTitleField = displayTitleField;
 
             transferSections = new Dictionary<Type, List<TextSectionObject>>();
             sectionManager = new TextSectionManager(displayTextField);
-            
-            DisplayNote(this.noteToDisplay);
         }
 
         private const string defaultforground = "black";
         private const string defaultbackground = "white";
-        private void SetupDisplayerColors()
+        private async void SetupDisplayerColors()
         {
+            System.Diagnostics.Debug.WriteLine("SetupDisplayerColors Started");
             string forgroundColor = defaultforground;
             string backgoundColor = defaultbackground;
 
-            if (noteToDisplay.insideNote.contentStyle != null)
-            {
-                CSSStyling styleOptions = noteToDisplay.insideNote.contentStyle.GetStyle("body");
+            NoteContent displayNote = noteToDisplay.GetContent();
 
-                if (styleOptions != null)
+            if (displayNote is NoteHTMLContent)
+            {
+                NoteHTMLContent htmlNodeContent = (NoteHTMLContent)displayNote;
+                if (htmlNodeContent.contentStyle != null)
                 {
-                    if (styleOptions.tagStyles.ContainsKey("color"))
+                    CSSStyling styleOptions = htmlNodeContent.contentStyle.GetStyle("body");
+                    if (styleOptions != null)
                     {
-                        forgroundColor = styleOptions.tagStyles["color"];
-                    }
-                    if (styleOptions.tagStyles.ContainsKey("background-color"))
-                    {
-                        backgoundColor = styleOptions.tagStyles["background-color"];
+                        if (styleOptions.tagStyles.ContainsKey("color"))
+                        {
+                            forgroundColor = styleOptions.tagStyles["color"];
+                        }
+                        if (styleOptions.tagStyles.ContainsKey("background-color"))
+                        {
+                            backgoundColor = styleOptions.tagStyles["background-color"];
+                        }
                     }
                 }
             }
 
+            if (!noteToDisplay.GetMetaData().backgroundColor.Equals(""))
+            {
+                backgoundColor = noteToDisplay.GetMetaData().backgroundColor;
+            }
+            if (!noteToDisplay.GetMetaData().frontColor.Equals(""))
+            {
+                forgroundColor = noteToDisplay.GetMetaData().frontColor;
+            }
+
             displayTextField.SetDefaultColors(forgroundColor, backgoundColor);
+            displayTitleField.SetDefaultColors("black","white");
 
             displayTextField.TextInsertedEvent += TextWasInserted;
             displayTextField.TextRemovedEvent += TextWasRemoved;
+
+            System.Diagnostics.Debug.WriteLine("SetupDisplayerColors Ended");
+        }
+
+        public async Task<NoteProxy> GetFormattedNote()
+        {
+            System.Diagnostics.Debug.WriteLine("GetFormattedNote Started");
+            NoteContent displayNote = noteToDisplay.GetContent();
+            displayNote.UpdatePlainText(this.displayTextField.GetPlainText());
+
+            noteToDisplay.GetMetaData().title = displayTitleField.GetPlainText();
+
+            displayNote.UpdateStyleSections(this.sectionManager.GetElementsList());
+            return this.noteToDisplay;
+            System.Diagnostics.Debug.WriteLine("GetFormattedNote Ended");
         }
 
         private void TextWasRemoved(object sender, ATextField.TextChangeEventArgs e)
@@ -70,94 +99,43 @@ namespace NotesApp
         }
 
         private SimpleNodeInterpreter nodeInterperter;
-        public void DisplayNote(NoteConnector noteToDisplay)
+        public async void DisplayNote(NoteProxy noteProxyToDisplay)
         {
-            nodeInterperter = new SimpleNodeInterpreter(noteToDisplay.insideNote.contents);
+            System.Diagnostics.Debug.WriteLine("DisplayNote Started");
 
+            this.noteToDisplay = noteProxyToDisplay;
+
+            NoteContent displayNote = noteProxyToDisplay.GetContent();
+
+            /*nodeInterperter = new SimpleNodeInterpreter(noteToDisplay.insideNote.contents);
             bodyNode = noteToDisplay.GetBodyContent();
             headNode = noteToDisplay.GetHeadContent();
-
             SimpleNodeInterpreter.RichText richText = nodeInterperter.GetRichText();
             displayTextField.SetText(richText.baseText);
             InsertAllSections(richText.sections);
+            SendSectionsToEditText();*/
+            displayTextField.SetText(displayNote.GetPlainText());
+            displayTitleField.SetText(noteProxyToDisplay.GetMetaData().title);
+            InsertAllSections(displayNote.GetStyleSections());
             SendSectionsToEditText();
-
-            //displayTextField.SetText(nodeInterperter.GetExtendedText());
-
-
-            //sectionManager.GenerateHtml();
-
-            //displayTextField.SetText(bodyNode.GetInnerText());
-            //displayTextField.SetText(noteToDisplay.insideNote.contents);
 
             SetupDisplayerColors();
 
             displayTextField.IsSetUp(true);
-        }
 
-        public void SaveCurrentNote(ISaveAndLoad dataManager)
-        {
-            this.noteToDisplay.insideNote.plainText = displayTextField.GetPlainText();
-            this.noteToDisplay.insideNote.styleSections = sectionManager.GetElementsList();
-            string noteRepresentation = this.noteToDisplay.insideNote.ToXML().ToString();
-            dataManager.SaveText(noteRepresentation,"/sdcard/Notes/", "thisTextNote.xml");
+            System.Diagnostics.Debug.WriteLine("DisplayNote Ended");
         }
-
+        
         public void ExecuteStyleChange(TextStyle newSectionStyle)
         {
             //displayTextField.SetStyleToSelection(newSectionStyle);
-
-            List<TextSectionObject> todo = SetupSectionList(newSectionStyle);
+            System.Diagnostics.Debug.WriteLine("ExecuteStyleChange Started");
+            List<TextSectionObject> todo = TextStyleTextSectionConverter.SetupSectionList(newSectionStyle);
             int[] startEnd = displayTextField.GetSelectionStartEnd();
             InsertAllSections(todo, startEnd[0], startEnd[1]);
             SendSectionsToEditText();
-        }
 
-        //private const string defaultFont = "Times New Roman";
-        //private const int defaultSize = 20;
-        //private string defaultColor = "white";
-        //private string defaultBackColor = "blue";
-        //private string defaultFrontColor = "red";
-        private List<TextSectionObject> SetupSectionList(TextStyle newSectionStyle)
-        {
-            List<TextSectionObject> toInsertSection = new List<TextSectionObject>();
-
-            if (newSectionStyle.fontsize.size != -1)
-            {
-                SizeTextSection aSpan = new SizeTextSection(newSectionStyle.fontsize.size);
-                toInsertSection.Add(aSpan);
-            }
-            if (newSectionStyle.isUnderlined)
-            {
-                UnderLineTextSection uSpan = new UnderLineTextSection();
-                toInsertSection.Add(uSpan);
-            }
-            if (!newSectionStyle.fontfamily.Equals(""))
-            {
-                FontFamilyTextSection tSpan = new FontFamilyTextSection(newSectionStyle.fontfamily);
-                toInsertSection.Add(tSpan);
-            }
-            if (!newSectionStyle.backcolor.Equals(""))
-            {
-                BColorTextSection bSpan = new BColorTextSection(newSectionStyle.backcolor);
-                toInsertSection.Add(bSpan);
-            }
-            if (!newSectionStyle.color.Equals(""))
-            {
-                FColorTextSection fSpan = new FColorTextSection(newSectionStyle.color);
-                toInsertSection.Add(fSpan);
-            }
-            if (newSectionStyle.isStrikedOut)
-            {
-                StrikeOutTextSection strikeSpan = new StrikeOutTextSection();
-                toInsertSection.Add(strikeSpan);
-            }
-            if (newSectionStyle.isBold || newSectionStyle.isItalic)
-            {
-                StyleTextSection styleSpan = new StyleTextSection(newSectionStyle.isBold, newSectionStyle.isItalic);
-                toInsertSection.Add(styleSpan);
-            }
-            return toInsertSection;
+            System.Diagnostics.Debug.WriteLine("ExecuteStyleChange Ended");
         }
 
         private void InsertAllSections(List<TextSectionObject> insertSections, int start, int end)
@@ -172,15 +150,18 @@ namespace NotesApp
 
         private void InsertAllSections(List<TextSectionObject> insertSections)
         {
-            foreach (TextSectionObject o in insertSections)
+            if (insertSections != null)
             {
-                if (o.GetType().Equals(typeof(FontFamilyTextSection)) || o.GetType().Equals(typeof(SizeTextSection)))
+                foreach (TextSectionObject o in insertSections)
                 {
-                    InsertSectionOfType(o, o.sectionStart, o.sectionEnd, o.GetType(), true);
-                }
-                else
-                {
-                    InsertSectionOfType(o, o.sectionStart, o.sectionEnd, o.GetType(), false);
+                    if (o.GetType().Equals(typeof(FontFamilyTextSection)) || o.GetType().Equals(typeof(SizeTextSection)))
+                    {
+                        InsertSectionOfType(o, o.sectionStart, o.sectionEnd, o.GetType(), true);
+                    }
+                    else
+                    {
+                        InsertSectionOfType(o, o.sectionStart, o.sectionEnd, o.GetType(), false);
+                    }
                 }
             }
         }

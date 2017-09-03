@@ -60,8 +60,8 @@ namespace NotesApp.Droid
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f05000b
-			public const int autoCompleteTextView1 = 2131034123;
+			// aapt resource value: 0x7f05000d
+			public const int addNoteButton = 2131034125;
 			
 			// aapt resource value: 0x7f050004
 			public const int boldStyleButton = 2131034116;
@@ -83,6 +83,9 @@ namespace NotesApp.Droid
 			
 			// aapt resource value: 0x7f05000c
 			public const int note_select_listview = 2131034124;
+			
+			// aapt resource value: 0x7f05000b
+			public const int note_title_edittext = 2131034123;
 			
 			// aapt resource value: 0x7f050007
 			public const int redStyleButton = 2131034119;

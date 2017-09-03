@@ -27,10 +27,12 @@ namespace NotesApp
         public override void FromXML(XElement toUnpack)
         {
             XElement element = toUnpack.Element("BColorTextSection");
-            if(element != null)
+            if (toUnpack.Name.LocalName.Equals("BColorTextSection"))
+                element = toUnpack;
+            if (element != null)
             {
                 Int32.TryParse(element.Element("Start").Value, out this.sectionStart);
-                Int32.TryParse(element.Element("End").Value, out this.sectionStart);
+                Int32.TryParse(element.Element("End").Value, out this.sectionEnd);
                 this.color = element.Element("Color").Value;
             }
         }
@@ -39,7 +41,7 @@ namespace NotesApp
         {
             XElement element = new XElement("BColorTextSection",
                 new XElement("Start", sectionStart),
-                new XElement("End", sectionStart),
+                new XElement("End", sectionEnd),
                 new XElement("Color", color)
                 );
             return element;

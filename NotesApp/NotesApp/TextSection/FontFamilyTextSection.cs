@@ -26,10 +26,12 @@ namespace NotesApp
         public override void FromXML(XElement toUnpack)
         {
             XElement element = toUnpack.Element("FontFamilyTextSection");
+            if (toUnpack.Name.LocalName.Equals("FontFamilyTextSection"))
+                element = toUnpack;
             if (element != null)
             {
                 Int32.TryParse(element.Element("Start").Value, out this.sectionStart);
-                Int32.TryParse(element.Element("End").Value, out this.sectionStart);
+                Int32.TryParse(element.Element("End").Value, out this.sectionEnd);
                 this.fontfamily = element.Element("FontFamily").Value;
             }
         }
@@ -38,7 +40,7 @@ namespace NotesApp
         {
             XElement element = new XElement("FontFamilyTextSection",
                 new XElement("Start", sectionStart),
-                new XElement("End", sectionStart),
+                new XElement("End", sectionEnd),
                 new XElement("FontFamily", fontfamily)
                 );
             return element;

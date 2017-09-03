@@ -46,11 +46,15 @@ namespace NotesApp.Droid
                 if (e.AfterCount < e.BeforeCount)
                 {
                     TextChangeEventArgs removeArgs = new TextChangeEventArgs() { startPosition = e.Start, endPosition = e.Start - e.BeforeCount };
+                    //spanRange.Replace(e.Start, e.Start + e.BeforeCount, "");
+                    spanRange.Replace(e.Start, e.Start + e.BeforeCount - e.AfterCount, "");
                     this.InvokeTextRemovedEvent(removeArgs);
                 }
                 else if (e.AfterCount > e.BeforeCount)
                 {
                     TextChangeEventArgs insertArgs = new TextChangeEventArgs() { startPosition = e.Start, endPosition = e.Start + e.AfterCount };
+                    string insertString = ("" + e.Text).Substring(e.Start, e.AfterCount - e.BeforeCount);
+                    spanRange.Insert(e.Start, insertString);
                     this.InvokeTextInsertedEvent(insertArgs);
                 }
             }
@@ -220,6 +224,8 @@ namespace NotesApp.Droid
         }
         public override void SetText(string text)
         {
+            if (text == null)
+                text = "";
             this.noteEditText.Text = text;
             this.spanRange = new SpannableStringBuilder(noteEditText.Text);
         }

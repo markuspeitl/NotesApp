@@ -29,8 +29,10 @@ namespace NotesApp.UWP
         {
             this.InitializeComponent();
 
+            GlobalSettings.SetupRootPath(Windows.Storage.ApplicationData.Current.LocalFolder.Path);
+            
             noteManager = new NoteManager(new SaveAndLoad());
-            noteManager.LoadNotes("Notes");
+            List<string> notes = noteManager.LoadNoteList(GlobalSettings.GetNotesPath());
             //noteManager.LoadNotes("C:\\Notes\\");
 
             SetupNoteDisplay();
@@ -38,11 +40,13 @@ namespace NotesApp.UWP
 
         public async void SetupNoteDisplay()
         {
-            NoteConnector note = await noteManager.GetNoteFromPosition(1);
+            NoteConnector note = await noteManager.GetNoteFromPosition(0);
 
             RichTextManager display = new RichTextManager(noteEditText);
 
-            NoteDisplayer noteDisplay = new NoteDisplayer(note, display);
+            NoteDisplayer noteDisplay = new NoteDisplayer(display);
+
+            noteDisplay.DisplayNote(note);
         }
     }
 }

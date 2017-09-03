@@ -136,6 +136,7 @@ namespace NotesApp
 
         private Dictionary<string, SimpleHtmlAttribute> delayedAttributes = null;
         private CSSStyling inlineStyling = null;
+        private CSSStyleManager styleManager = null;
         private string ParseAttributes(BackTrackReader lineReader)
         {
             delayedAttributes = new Dictionary<string, SimpleHtmlAttribute>();
@@ -247,9 +248,22 @@ namespace NotesApp
 
         private SimpleHtmlNode OpenNode(SimpleHtmlNode parentNode, string openTag)
         {
-            SimpleHtmlNode newNode = new SimpleHtmlNode(openTag, null, null);
+
+            SimpleHtmlNode newNode = new SimpleHtmlNode(openTag, inlineStyling, this.styleManager);
             parentNode.AddChild(newNode);
             parentNode = newNode;
+
+            if (delayedAttributes != null)
+            {
+                if (delayedAttributes.Count > 0)
+                {
+                    parentNode.attributes = delayedAttributes;
+                    delayedAttributes = null;
+                }
+            }
+
+            delayedAttributes = null;
+            inlineStyling = null;
 
             if (DoImmediateClose(openTag))
             {
@@ -278,7 +292,7 @@ namespace NotesApp
         {
 
             SimpleHtmlNode rootNode;
-
+            this.styleManager = styleManager;
             BackTrackReader lineReader = new BackTrackReader(fileReader,10);
 
             int readCharInt = -1;
@@ -320,22 +334,8 @@ namespace NotesApp
 
                                 //Opening Tag
                                 string opentag = ParseTag(lineReader);
+
                                 currentNode = OpenNode(currentNode, opentag);
-
-                                if(delayedAttributes != null)
-                                {
-                                    if(delayedAttributes.Count > 0)
-                                    {
-                                        currentNode.attributes = delayedAttributes;
-                                        delayedAttributes = null;
-                                    }
-                                }
-                                if (inlineStyling != null)
-                                {
-                                    currentNode.htmlCssStyle = inlineStyling;
-                                    inlineStyling = null;
-                                }
-
                                 break;
                             case 2:
                                 
@@ -366,7 +366,8 @@ namespace NotesApp
                     }
                 }
             }
-            
+
+            this.styleManager = null;
             return rootNode;
         }
 

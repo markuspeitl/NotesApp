@@ -20,18 +20,20 @@ namespace NotesApp
         public override void FromXML(XElement toUnpack)
         {
             XElement element = toUnpack.Element("BreakLineTextSection");
+            if (toUnpack.Name.LocalName.Equals("BreakLineTextSection"))
+                element = toUnpack;
             if (element != null)
             {
-                Int32.TryParse(element.Element("Start").Value, out this.sectionStart);
-                Int32.TryParse(element.Element("End").Value, out this.sectionStart);
+                Int32.TryParse(element.Element("Start").Value, out this.sectionEnd);
+                Int32.TryParse(element.Element("End").Value, out this.sectionEnd);
             }
         }
 
         public override XElement ToXML()
         {
             XElement element = new XElement("BreakLineTextSection",
-                new XElement("Start", sectionStart),
-                new XElement("End", sectionStart)
+                new XElement("Start", sectionEnd),
+                new XElement("End", sectionEnd)
                 );
             return element;
         }

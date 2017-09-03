@@ -20,10 +20,12 @@ namespace NotesApp
         public override void FromXML(XElement toUnpack)
         {
             XElement element = toUnpack.Element("StrikeOutTextSection");
+            if (toUnpack.Name.LocalName.Equals("StrikeOutTextSection"))
+                element = toUnpack;
             if (element != null)
             {
                 Int32.TryParse(element.Element("Start").Value, out this.sectionStart);
-                Int32.TryParse(element.Element("End").Value, out this.sectionStart);
+                Int32.TryParse(element.Element("End").Value, out this.sectionEnd);
             }
         }
 
@@ -31,7 +33,7 @@ namespace NotesApp
         {
             XElement element = new XElement("StrikeOutTextSection",
                 new XElement("Start", sectionStart),
-                new XElement("End", sectionStart)
+                new XElement("End", sectionEnd)
                 );
             return element;
         }

@@ -14,6 +14,13 @@ namespace NotesApp.Interfaces
         public event EventHandler<TextChangeEventArgs> TextRemovedEvent;
         public event EventHandler<StyleChangedEventArgs> StyleChangedEvent;
 
+        protected HexColorProvider provider;
+
+        public ATextField()
+        {
+            provider = new HexColorProvider();
+        }
+
         public abstract void SetText(string text);
         //public abstract void SetText(SimpleHtmlNode html);
         //public abstract void SetStyleToSection(TextStyle textStyle, int textStart, int textEnd);

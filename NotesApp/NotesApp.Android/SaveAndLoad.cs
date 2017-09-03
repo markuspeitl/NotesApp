@@ -11,6 +11,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace NotesApp.Droid
 {
@@ -42,7 +43,7 @@ namespace NotesApp.Droid
             return null;
         }
 
-        public Stream GetStreamFromPath(string path)
+        public async Task<Stream> GetStreamFromPath(string path)
         {
             if (File.Exists(path))
             {

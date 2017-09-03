@@ -8,8 +8,10 @@ namespace NotesApp
 {
     public class TextStyle
     {
-        public int size = -1;
+        //public int size = -1;
+        public SizeAble fontsize = new SizeAble() { size = -1 };
         public string color = "";
+
         public string backcolor = "";
         public string fontfamily = "";
         public bool isBold;
@@ -35,55 +37,17 @@ namespace NotesApp
             {
                 this.fontfamily = parent.fontfamily;
             }
-            if (parent.size != -1 && this.size != -1)
+            if (parent.fontsize.size != -1 && this.fontsize.size != -1)
             {
-                this.size = parent.size;
+                this.fontsize = parent.fontsize;
             }
         }
 
-        public virtual void ApplyCSSStyling(CSSStyling cssStyler)
+        public struct SizeAble
         {
-            if (cssStyler.tagStyles.ContainsKey("color"))
-            {
-                this.color = cssStyler.tagStyles["color"];
-            }
-            if (cssStyler.tagStyles.ContainsKey("background-color"))
-            {
-                this.backcolor = cssStyler.tagStyles["background-color"];
-            }
-            if (cssStyler.tagStyles.ContainsKey("font-weight"))
-            {
-                if (cssStyler.tagStyles["font-weight"].Equals("bold"))
-                    this.isBold = true;
-            }
-            if (cssStyler.tagStyles.ContainsKey("font-style"))
-            {
-                if (cssStyler.tagStyles["font-style"].Equals("italic"))
-                    this.isItalic = true;
-            }
-            if (cssStyler.tagStyles.ContainsKey("text-decoration"))
-            {
-                if (cssStyler.tagStyles["text-decoration"].Equals("line-through"))
-                    this.isStrikedOut = true;
-            }
-            if (cssStyler.tagStyles.ContainsKey("text-decoration"))
-            {
-                if (cssStyler.tagStyles["text-decoration"].Equals("underline"))
-                    this.isUnderlined = true;
-            }
-            if (cssStyler.tagStyles.ContainsKey("font-size"))
-            {
-                int size = -1;
-                if (Int32.TryParse(cssStyler.tagStyles["font-size"], out size))
-                {
-                    this.size = size;
-                }  
-            }
-            if (cssStyler.tagStyles.ContainsKey("font-family"))
-            {
-                this.fontfamily = cssStyler.tagStyles["font-family"];
-            }
+            public int size;
+            public bool inPx;
+            public bool inDP;
         }
-
     }
 }

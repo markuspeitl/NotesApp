@@ -10,7 +10,6 @@ namespace NotesApp
     {
         public string Name;
         public string Value;
-
         private bool parenthesis = false;
 
         public SimpleHtmlAttribute(string representation)
@@ -25,6 +24,12 @@ namespace NotesApp
             }
 
             Value = splitstring[1].Replace("\"","");
+        }
+
+        public SimpleHtmlAttribute(string name, string value)
+        {
+            Name = name;
+            Value = value;
         }
 
         public override string ToString()

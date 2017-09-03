@@ -60,23 +60,27 @@ namespace NotesApp.Droid
             dataManager = new SaveAndLoad();
             manager = new NoteManager(dataManager);
 
+            SetupNote();
+        }
 
-            int selectedNotePos = this.Intent.GetIntExtra("SelectedNotePosition",0);
-            NoteConnector selectedNote = manager.GetNoteFromPosition(selectedNotePos);
+        private async void SetupNote()
+        {
+            int selectedNotePos = this.Intent.GetIntExtra("SelectedNotePosition", 0);
+            NoteConnector selectedNote = await manager.GetNoteFromPosition(selectedNotePos);
 
-            editManager = new EditTextManager(noteEditText,this);
+            editManager = new EditTextManager(noteEditText, this);
             noteDisplay = new NoteDisplayer(selectedNote, editManager);
         }
 
         private void OnSize24ButtonClicked(object sender, EventArgs e)
         {
-            noteDisplay.ExecuteStyleChange(new TextStyle() { size = 29 });
+            noteDisplay.ExecuteStyleChange(new TextStyle() { fontsize = new TextStyle.SizeAble() { size = 29 } });
             noteDisplay.SaveCurrentNote(dataManager);
         }
 
         private void OnSize18ButtonClicked(object sender, EventArgs e)
         {
-            noteDisplay.ExecuteStyleChange(new TextStyle() { size = 22 });
+            noteDisplay.ExecuteStyleChange(new TextStyle() { fontsize = new TextStyle.SizeAble() { size = 22 } });
         }
 
         private void OnRedButtonClicked(object sender, EventArgs e)

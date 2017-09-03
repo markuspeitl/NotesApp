@@ -66,7 +66,7 @@ namespace NotesApp
                 fileStream = await datamanager.GetStreamFromPath(selectedDirPath + "/" + newConnector.insideNote.title + "/" + newConnector.insideNote.title + Note.noteContentFormat);
                 if (fileStream != null)
                 {
-                    SimpleHtmlNode content = parser.ParseXML(fileStream, newConnector.insideNote.contentStyle);
+                    SimpleHtmlNode content = parser.ParseXML2(fileStream, newConnector.insideNote.contentStyle);
                     newConnector.SetNoteContent(content);
                     return true;
                 }

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static NotesApp.TextStyle;
 
 namespace NotesApp
 {
-    public class TextStyleProvider
+    public class TextStyleHTMLProvider
     {
 
         public static TextExtendedStyle GetTagStyle(string tag)
@@ -23,6 +24,8 @@ namespace NotesApp
                     return GetBoldStyle();
                 case "s":
                     return GetStrikeThroughStyle();
+                case "span":
+                    return new TextExtendedStyle();
                 case "br":
                     return GetLineBreakStyle();
                 case "h1":
@@ -78,27 +81,27 @@ namespace NotesApp
         
         private static TextExtendedStyle GetHeader1Style()
         {
-            return new TextExtendedStyle() { marginBottom = 20, marginTop = 20, lineBreak = true, size = 50, setMargin = true };
+            return new TextExtendedStyle() { marginBottom = 20, marginTop = 20, lineBreak = true, fontsize = new SizeAble() { size = 50 }, setMargin = true };
         }
         private static TextExtendedStyle GetHeader2Style()
         {
-            return new TextExtendedStyle() { marginBottom = 16, marginTop = 16, lineBreak = true, size = 40, setMargin = true };
+            return new TextExtendedStyle() { marginBottom = 16, marginTop = 16, lineBreak = true, fontsize = new SizeAble() { size = 40 }, setMargin = true };
         }
         private static TextExtendedStyle GetHeader3Style()
         {
-            return new TextExtendedStyle() { marginBottom = 14, marginTop = 14, lineBreak = true, size = 32, setMargin = true };
+            return new TextExtendedStyle() { marginBottom = 14, marginTop = 14, lineBreak = true, fontsize = new SizeAble() { size = 32 }, setMargin = true };
         }
         private static TextExtendedStyle GetHeader4Style()
         {
-            return new TextExtendedStyle() { marginBottom = 12, marginTop = 12, lineBreak = true, size = 25, setMargin = true };
+            return new TextExtendedStyle() { marginBottom = 12, marginTop = 12, lineBreak = true, fontsize = new SizeAble() { size = 25 }, setMargin = true };
         }
         private static TextExtendedStyle GetHeader5Style()
         {
-            return new TextExtendedStyle() { marginBottom = 10, marginTop = 10, lineBreak = true, size = 20, setMargin = true };
+            return new TextExtendedStyle() { marginBottom = 10, marginTop = 10, lineBreak = true, fontsize = new SizeAble() { size = 20 }, setMargin = true };
         }
         private static TextExtendedStyle GetHeader6Style()
         {
-            return new TextExtendedStyle() { marginBottom = 10, marginTop = 10, lineBreak = true, size = 15, setMargin = true };
+            return new TextExtendedStyle() { marginBottom = 10, marginTop = 10, lineBreak = true, fontsize = new SizeAble() { size = 15 }, setMargin = true };
         }
 
     }

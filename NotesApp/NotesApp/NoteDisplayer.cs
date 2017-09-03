@@ -33,21 +33,26 @@ namespace NotesApp
         private const string defaultbackground = "white";
         private void SetupDisplayerColors()
         {
-            CSSStyling styleOptions = noteToDisplay.insideNote.contentStyle.GetStyle("body");
             string forgroundColor = defaultforground;
             string backgoundColor = defaultbackground;
 
-            if (styleOptions != null)
+            if (noteToDisplay.insideNote.contentStyle != null)
             {
-                if(styleOptions.tagStyles.ContainsKey("color"))
+                CSSStyling styleOptions = noteToDisplay.insideNote.contentStyle.GetStyle("body");
+
+                if (styleOptions != null)
                 {
-                    forgroundColor = styleOptions.tagStyles["color"];
-                }
-                if (styleOptions.tagStyles.ContainsKey("background-color"))
-                {
-                    backgoundColor = styleOptions.tagStyles["background-color"];
+                    if (styleOptions.tagStyles.ContainsKey("color"))
+                    {
+                        forgroundColor = styleOptions.tagStyles["color"];
+                    }
+                    if (styleOptions.tagStyles.ContainsKey("background-color"))
+                    {
+                        backgoundColor = styleOptions.tagStyles["background-color"];
+                    }
                 }
             }
+
             displayTextField.SetDefaultColors(forgroundColor, backgoundColor);
 
             displayTextField.TextInsertedEvent += TextWasInserted;
@@ -117,9 +122,9 @@ namespace NotesApp
         {
             List<TextSectionObject> toInsertSection = new List<TextSectionObject>();
 
-            if (newSectionStyle.size != -1)
+            if (newSectionStyle.fontsize.size != -1)
             {
-                SizeTextSection aSpan = new SizeTextSection(newSectionStyle.size);
+                SizeTextSection aSpan = new SizeTextSection(newSectionStyle.fontsize.size);
                 toInsertSection.Add(aSpan);
             }
             if (newSectionStyle.isUnderlined)

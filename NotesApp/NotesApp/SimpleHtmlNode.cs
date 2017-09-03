@@ -21,21 +21,23 @@ namespace NotesApp
         private String content;
         public String Content { get { return content; } set { IsText = true; content = value; } }
 
-        public List<SimpleHtmlAttribute> attributes;
+        public Dictionary<string,SimpleHtmlAttribute> attributes;
 
         private TextStyle nodeStyle;
         private CSSStyleManager cssStyler;
+        public CSSStyling htmlCssStyle;
 
         public int textSectionStart = 0;
         public int textSectionEnd = 0;
 
-        public SimpleHtmlNode(string tag, CSSStyleManager cssStyler)
+        public SimpleHtmlNode(string tag, CSSStyling htmlCssStyle, CSSStyleManager cssStyler)
         {
             this.tag = tag;
             this.ChildNodes = new List<SimpleHtmlNode>();
-            this.attributes = new List<SimpleHtmlAttribute>();
+            this.attributes = new Dictionary<string, SimpleHtmlAttribute>();
             this.cssStyler = cssStyler;
-            this.nodeStyle = TextStyleProvider.GetTagStyle(tag);
+            this.htmlCssStyle = htmlCssStyle;
+            this.nodeStyle = TextStyleHTMLProvider.GetTagStyle(tag);
         }
 
         private void SetParent(SimpleHtmlNode parent)
@@ -49,7 +51,7 @@ namespace NotesApp
         private void UpdateNodeStyling()
         {
             //Reset NodeStyle before inheriting new Style from parent
-            nodeStyle = TextStyleProvider.GetTagStyle(tag);
+            nodeStyle = TextStyleHTMLProvider.GetTagStyle(tag);
 
             //If nodeStyle is null it is not supported and wont be set
             if (nodeStyle != null)
@@ -57,6 +59,7 @@ namespace NotesApp
                 //Inherit Parent Styling when setting new Parent
                 if (this.parent != null)
                 {
+
                     if (this.parent.nodeStyle != null)
                         nodeStyle.Inherit(this.parent.nodeStyle);
                 }
@@ -76,8 +79,13 @@ namespace NotesApp
                     if (ccsStyle != null)
                     {
                         //OverWrite Relevant Attributes
-                        nodeStyle.ApplyCSSStyling(ccsStyle);
+                        TextStyleCSSProvider.ApplyCSSValuesToTextStyle(nodeStyle, ccsStyle);
                     }
+                }
+                if (htmlCssStyle != null)
+                {
+                    //OverWrite Relevant Attributes (inline style attribute)
+                    TextStyleCSSProvider.ApplyCSSValuesToTextStyle(nodeStyle, htmlCssStyle);
                 }
             }
         }
@@ -222,9 +230,9 @@ namespace NotesApp
             if (attributes.Count > 0)
             {
                 text = " ";
-                foreach (SimpleHtmlAttribute s in attributes)
+                foreach (KeyValuePair<string,SimpleHtmlAttribute> s in attributes)
                 {
-                    text += s;
+                    text += s.Value;
                 }
             }
 

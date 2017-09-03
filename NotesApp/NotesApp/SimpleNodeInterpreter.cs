@@ -83,9 +83,9 @@ namespace NotesApp
         {
             List<TextSectionObject> toInsertSection = new List<TextSectionObject>();
 
-            if (newSectionStyle.size != -1)
+            if (newSectionStyle.fontsize.size != -1)
             {
-                SizeTextSection aSpan = new SizeTextSection(newSectionStyle.size);
+                SizeTextSection aSpan = new SizeTextSection(newSectionStyle.fontsize.size);
                 toInsertSection.Add(aSpan);
             }
             if (newSectionStyle.isUnderlined)

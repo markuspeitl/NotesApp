@@ -38,7 +38,7 @@ namespace NotesApp.UWP
 
         public async void SetupNoteDisplay()
         {
-            NoteConnector note = await noteManager.GetNoteFromPosition(0);
+            NoteConnector note = await noteManager.GetNoteFromPosition(1);
 
             RichTextManager display = new RichTextManager(noteEditText);
 

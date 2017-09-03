@@ -17,15 +17,15 @@ namespace NotesApp.TextSection
         {
             sortedTextSections = new LinkedList<TextSectionObject>();
 
-            rootNode = new SimpleHtmlNode("html", null);
+            rootNode = new SimpleHtmlNode("html", null, null);
 
-            currentNode = new SimpleHtmlNode("head", null);
+            currentNode = new SimpleHtmlNode("head", null, null);
             rootNode.AddChild(currentNode);
 
-            currentNode = new SimpleHtmlNode("body", null);
+            currentNode = new SimpleHtmlNode("body", null, null);
             rootNode.AddChild(currentNode);
 
-            currentNode = new SimpleHtmlNode("p", null);
+            currentNode = new SimpleHtmlNode("p", null, null);
             rootNode.AddChild(currentNode);
         }
 

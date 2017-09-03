@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -13,7 +14,6 @@ namespace NotesApp.UWP
     public class RichTextManager : ATextField
     {
         private RichEditBox noteEditText;
-
         public RichTextManager(RichEditBox noteEditText)
         {
             this.noteEditText = noteEditText;
@@ -21,7 +21,7 @@ namespace NotesApp.UWP
 
         public override void ClearStyles(int start, int end)
         {
-            throw new NotImplementedException();
+
         }
 
         public override void ClearText()
@@ -66,13 +66,13 @@ namespace NotesApp.UWP
                 {
                     if (((BColorTextSection)section).color != "")
                     {
-                        string color = "test";
+                        string color = ((BColorTextSection)section).color;
                         //Color color = Color.ParseColor(((BColorTextSection)section).color);
                         if (color != null)
                         {
                             //RemoveOverlappingSpans(typeof(BackgroundColorSpan), section);
                             ITextCharacterFormat charFormatting = this.GetCharFormatting(section.GetSectionStart(), section.GetSectionEnd());
-                            charFormatting.BackgroundColor = Windows.UI.Colors.Red;
+                            charFormatting.BackgroundColor = ParseStringToColor(color);
                             this.SetCharFormatting(charFormatting);
                         }
                     }
@@ -84,13 +84,13 @@ namespace NotesApp.UWP
                 {
                     if (((FColorTextSection)section).color != "")
                     {
-                        string color = "test";
+                        string color = ((FColorTextSection)section).color;
                         //Color color = Color.ParseColor(((FColorTextSection)section).color);
                         if (color != null)
                         {
                             //RemoveOverlappingSpans(typeof(ForegroundColorSpan), section);
                             ITextCharacterFormat charFormatting = this.GetCharFormatting(section.GetSectionStart(), section.GetSectionEnd());
-                            charFormatting.ForegroundColor = Windows.UI.Colors.Red;
+                            charFormatting.ForegroundColor = ParseStringToColor(color);
                             this.SetCharFormatting(charFormatting);
                         }
                     }
@@ -183,22 +183,36 @@ namespace NotesApp.UWP
 
         public override void SetDefaultColors(string foregroundColor, string backgroundColor)
         {
-            noteEditText.AllowFocusWhenDisabled = false;
-            noteEditText.UseSystemFocusVisuals = false;
-            noteEditText.AllowFocusOnInteraction = false;
-            //noteEditText.IsHitTestVisible = false;
-            noteEditText.ReleasePointerCaptures();
+            provider.AddToDic("yellow",         Colors.Yellow.ToString());
+            provider.AddToDic("yellowgreen",    Colors.YellowGreen.ToString());
+            provider.AddToDic("black",          Colors.Black.ToString());
+            provider.AddToDic("gray",           Colors.Gray.ToString());
+            provider.AddToDic("darkgray",       Colors.DarkGray.ToString());
+            provider.AddToDic("orange",         Colors.Orange.ToString());
+            Xamarin.Forms.Platform.UWP.ColorConverter conv = new Xamarin.Forms.Platform.UWP.ColorConverter();
 
-            
+            noteEditText.Background = new SolidColorBrush(ParseStringToColor(backgroundColor));
+            noteEditText.Foreground = new SolidColorBrush(ParseStringToColor(foregroundColor));
 
-            noteEditText.Background = new SolidColorBrush(Windows.UI.Colors.YellowGreen);
-            noteEditText.Foreground = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
             //ITextCharacterFormat format = noteEditText.Document.GetDefaultCharacterFormat();
             //format.ForegroundColor = Windows.UI.Colors.DarkBlue;
             //format.BackgroundColor = Windows.UI.Colors.YellowGreen;
             //noteEditText.Document.SetDefaultCharacterFormat(format);
 
             //noteEditText.UpdateLayout();
+        }
+
+        private Color ParseStringToColor(string colorRep)
+        {
+            byte[] colorBytes = provider.ParseColorStringToBytes(colorRep);
+            if (colorBytes.Length.Equals(4))
+            {
+                return ColorHelper.FromArgb(colorBytes[0], colorBytes[1], colorBytes[2], colorBytes[3]);
+            }
+            else
+            {
+                return Colors.Red;
+            }
         }
 
         public override void SetText(string text)
